@@ -1,0 +1,16 @@
+name: “Will Godwin”
+output_dir: "."
+navbar:
+  title: HOME
+  left:
+    - text: "Data Viz"
+      href: google_map.html
+    - text: "Speaking"
+      href: talks.html
+  right:
+    - icon: fa-envelope fa-lg
+      href: contact.html
+    - icon: fa-github fa-lg
+      href: http://github.com/wgodwin28
+    - icon: fa-linkedin fa-lg
+      href: https://www.linkedin.com/in/will-godwin-03a106150/
