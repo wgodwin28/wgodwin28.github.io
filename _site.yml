@@ -5,7 +5,7 @@ navbar:
   left:
     - text: "Data Viz"
       href: google_map.html
-    - text: "Speaking"
+    - text: "Papers"
       href: talks.html
   right:
     - icon: fa-envelope fa-lg
