@@ -1,0 +1,15 @@
+---
+
+---
+
+<link rel="stylesheet" href="styles.css" type="text/css">
+
+## Analyses from Political Ad Spending on Google Platforms
+
+\vspace{3em}
+
+[Geographic Distribution](google_map.html)
+
+\vspace{3em}
+
+[RShiny visualization showing time series of spending](https://wgodwin28.shinyapps.io/shiny)

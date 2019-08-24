@@ -3,10 +3,10 @@ output_dir: "."
 navbar:
   title: HOME
   left:
-    - text: "Data Viz"
-      href: google_map.html
+    - text: "Data Projects"
+      href: projects.html
     - text: "Papers"
-      href: talks.html
+      href: papers.html
   right:
     - icon: fa-envelope fa-lg
       href: contact.html
