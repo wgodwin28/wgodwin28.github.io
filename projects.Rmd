@@ -4,11 +4,15 @@
 
 <link rel="stylesheet" href="styles.css" type="text/css">
 
-## Analyses from Political Ad Spending on Google Platforms
+## Political Ad Spending on Google Platforms
 
 \vspace{3em}
 
-[Geographic Distribution](google_map.html)
+[Geographic Distribution Part 1-U.S level](map_ads_us.html)
+
+\vspace{2em}
+
+[Geographic Distribution Part 2-State level](map_ads_state.html)
 
 \vspace{3em}
 
