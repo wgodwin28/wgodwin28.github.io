@@ -16,4 +16,8 @@
 
 \vspace{3em}
 
+[Modeling Impressions (Ad views)](impressions_model.html)
+
+\vspace{3em}
+
 [RShiny visualization showing time series of spending](https://wgodwin28.shinyapps.io/shiny)

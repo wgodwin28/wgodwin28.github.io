@@ -55,7 +55,7 @@ shape.data <- inner_join(shape, dt, by="state_var") %>%
 
 ```
 #Intro
-Money diverted to political advertising has become a multi-million dolloar business as technology has brought us high-speed internet and political organizations are able to form super PACs. Understanding where in the U.S. this money is focused can provide insight into what populations and regions of the country political candidates want to target. Google, to its credit, releases spending on political ads for its platform in a easily accessible manner, which makes this investigation much easier. Here I show U.S, state-level maps of spending on political ads since June 2018.
+Money diverted to political advertising has become a multi-million dollar business as technology has brought us high-speed internet and political organizations are able to form super PACs. Understanding where in the U.S. this money is focused can provide insight into what populations and regions of the country political candidates want to target. Google, to its credit, releases spending on political ads for its platform in a easily accessible manner, which makes this investigation much easier. Here I show U.S, state-level maps of spending on political ads since June 2018.
 
 After downloading the data and performing some rudimentary cleaning, the data are ready to map. You can find all the code I used for this analysis on my [github](http://github.com/wgodwin28/wgodwin28.github.io). The first map below shows absolute spending from June 2018-July 2019. Clearly, California and Florida stand out as the top recipients of political ad dollars. However, there are some surprising states near the top as well, with Texas, Arizona, Missouri, and Tennessee all receiving more that 4 million dollars since June 2018.
 
