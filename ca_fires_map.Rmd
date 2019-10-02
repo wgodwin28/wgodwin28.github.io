@@ -1,0 +1,230 @@
+---
+title: "California Wildfires-2015"
+author: "Will Godwin"
+date: "9/30/2019"
+output: html_document
+---
+<style>
+.leaflet {
+    margin: auto;
+}
+</style>
+
+This analysis was set in motion after running across extensive wildfire data on 
+[Kaggle](https://www.kaggle.com/rtatman/188-million-us-wildfires/download), published 
+by the national Fire Program Analysis. These data are the accumulation of federal, 
+state, and local reporting systems for wildfires and represent 1.88 million wildfires 
+from 1992-2015. Each fire is geo-located by latitude and longitude, which makes mapping 
+them possible and essential. Here, I replicate and expand upon an article by [the Civis Journal](https://medium.com/civis-analytics/making-interactive-maps-of-public-data-in-r-d360c0e13f13) 
+that uses R's *leaflet* package to map publicly available federal grant data. In an effort 
+to explore the geographic distribution of the most destructive wildfires, I restrict 
+the data to wildfires that burned in excess of 100 acres in California during 2015. 
+
+One important caveat is that wildfires are not unequivocably detrimental. In the right 
+environment, wildfires can promote healthy ecosystems, clearing out disease and allowing
+an area to regain biodiversity. However, climate scientists are increasingly concerned
+with the effect of climate change on wildfire propagation and intensity. Understanding
+the primary drivers underlying wildfire behavior will be crucial to fire prevention and
+containment.
+
+```{r, message=F, include=F}
+#Purpose: make map of california fires in 2015 using leaflet
+#https://medium.com/civis-analytics/making-interactive-maps-of-public-data-in-r-d360c0e13f13 based on this article
+
+# clear memory
+rm(list=ls())
+
+#necessary libs
+library(RSQLite); library(tidyverse); library(sf); library(leaflet); library(viridis)
+
+#Read in wildfire data-it's in SQLite format so we'll query the local db
+fires <- read.csv("~/Desktop/fires/data/fires_ca.csv")
+#db <- dbConnect(SQLite(), dbname="~/Desktop/fires/data/FPA_FOD_20170508.sqlite")
+#fires <- dbGetQuery(db, "SELECT * FROM Fires")
+
+#subset to 2015 california fires
+fires <- fires %>%
+  filter(STATE=="CA" & FIRE_YEAR==2015 & FIRE_SIZE>=100)
+
+#number of fires
+n_fires <- nrow(fires)
+```
+
+
+The vast majority of the 1.88 million wildfires are less than 100 acres so our final 
+dataset is comprised of `r n_fires` fires. This number is small enough to create a 
+comprehensible map showing points for each fire.
+
+Since preliminary data exploration is mandatory for any data project, I'll first walkthrough
+some summary statistics of relevant variables within my restricted fires dataset. I do 
+display most of the code in this analysis but it can be found in full on [github](https://github.com/wgodwin28/wgodwin28.github.io).
+
+## How big are these fires?
+```{r fire size, message=F}
+#order of the fire sizes
+fire_order <- c("100-299 acres", "300-999 acres", "1000-4999 acres","5000+ acres")
+
+#create ordered, articulate fire size variable
+fires <- fires %>%
+  mutate(
+    fire_size_category = case_when(
+      FIRE_SIZE_CLASS=="D" ~ "100-299 acres",
+      FIRE_SIZE_CLASS=="E" ~ "300-999 acres",
+      FIRE_SIZE_CLASS=="F" ~ "1000-4999 acres",
+      FIRE_SIZE_CLASS=="G" ~ "5000+ acres"
+    ),
+    fire_size_category=factor(fire_size_category, levels = fire_order)
+  )
+#make table
+fires %>%
+  count(fire_size_category)
+```
+
+Almost half of the `r n_fires` burned 100-299 acres, however there were 53 fires in 2015 that each burned over 1000 acres of California. Potentially more concerning were the 27 fires that grew to a size 5000 or more acres.
+
+```{r distribution of size, message=F}
+#histogram of distribution
+fires %>%
+  ggplot(aes(FIRE_SIZE)) +
+  geom_histogram() +
+  theme_bw() +
+  xlab("Size of fire (acres)")
+
+```
+
+Histogram of the fire size (in acres) reveals a very sharp left skew with a long right tail. The 1 or 2 fires of over 150,000 acres are reducing the resolution that we can see the less extreme parts of the data. I log-transform the fire size variable in order to reduce the influence of extreme values in the display of the distribution.
+
+```{r, message=F}
+#log transform to reduce influence of upper outliers
+fires %>%
+  ggplot(aes(log(FIRE_SIZE))) +
+  geom_histogram() +
+  theme_bw() +
+  xlab("Log-transformed size of fire (acres)")
+```
+
+Even when log-transformed, fire size distribution has a heavy right tail. The main takeaway here is that the burn area of most fires was less than 10,000 acres, with a few fires growing to in excess of 50,000 acres.
+
+## When do most fires start?
+```{r time series of fires, message=F}
+#aggregate and plot the time trend of number of fires
+fires %>%
+  mutate(startDate=as.Date(paste0(FIRE_YEAR, "-", DISCOVERY_DOY), format="%Y-%j"), #make date variable
+         month=factor(months.Date(startDate), levels = month.name)) %>% #make month variable
+  group_by(month) %>%
+  count() %>%
+  ggplot(aes(month, n)) +
+    geom_point() +
+    xlab("Fire Start Month") +
+    ylab("Total fires w/ 100+ acres burned") +
+    theme_bw()
+```
+
+Unsurprisingly, the vast majority of fires started in the summer months of June, July, August. Notably, though, the shoulder season months of April, September, and October contained 30 fires combined, indicating that fire survelliance cannot end once summer does.
+
+### When do the most destructive fires start?
+```{r time series of acres burned, message=F}
+#summarize acres burned
+fires %>%
+  mutate(startDate=as.Date(paste0(FIRE_YEAR, "-", DISCOVERY_DOY), format="%Y-%j"), #make date variable
+         Month=factor(months.Date(startDate), levels = month.name)) %>% #make month variable
+  group_by(Month) %>%
+  summarise(fire_size=sum(FIRE_SIZE)) %>%
+  ggplot(aes(Month, fire_size)) +
+    geom_point() +
+    xlab("Fire Start Month") +
+    ylab("Number of acres burned") +
+    theme_bw()
+```
+
+Also fairly predictably, the monthly sum of number of acres burned closely tracks the monthly fires observed above. Fires that started in July caused the greatest destruction by far, totaling to over 500,000 acres burned.
+
+## What are the causes of the fires?
+```{r causes of fires, message=F}
+#table of counts
+fires %>%
+  count(STAT_CAUSE_DESCR, sort = T)
+
+#table of acres burned by each cause
+fires %>%
+  group_by(STAT_CAUSE_DESCR) %>%
+  summarise(total=n(), acres_burned=sum(FIRE_SIZE)) %>%
+  arrange(-acres_burned)
+```
+
+The table above shows the counts of the causes of wildfire as well as the number of acres burned for each cause. Wildfires caused by lightning were the most prevalent and led to the largest number of acres burned of any cause. Powerline, arson, and smoking caused wildfires, while they garner great media attention, were actually some of the least prevalent causes, only spawning 10 fires combined in 2015. The cause of the fire does appear to be related to total acres burned, which would be useful information if we wanted to build a model to predict fire size. Maybe that'll turn into good fodder for a future post.
+
+
+## Mapping the fires
+Now I finally turn toward mapping the fires. I downloaded a shapefile of california county boundaries from State of California Department of Technology [website](https://data.ca.gov/dataset/ca-geographic-boundaries).
+
+```{r spatial setup, echo=F}
+#make fires spatial using sf
+fires <- fires %>% st_as_sf(coords = c("LONGITUDE", "LATITUDE"), 
+           crs = 4326, agr = "field") #make sure projection is 4326
+
+#load in california shapefile
+ca_shape <- read_sf("~/Desktop/fires/data/CA_Counties/CA_Counties_TIGER2016.shp") %>% 
+  st_transform(4326) %>% #make sure projection is 4326
+  select(NAME)
+
+#initial map-by cause
+
+ggplot(ca_shape) +
+  geom_sf(fill = 'black', color = 'white') +
+  geom_sf(data = fires, aes(fill = `fire_size_category`, color = `fire_size_category`),
+          size = 2) +
+  guides(alpha = F,
+         color = guide_legend(title = "Fire Size"),
+         fill = guide_legend(title = "Fire Size"))
+```
+
+The map above shows the spatial distribution of the 2015 California fires after overlaying the points on top of the shapefile. The points are colored by the cause of wildfire, with lightning cause wildfires clearly clustering in Northern California.
+
+```{r use leaflet}
+#create label for points
+fires <- fires %>%
+  mutate(startDate=as.Date(paste0(FIRE_YEAR, "-", DISCOVERY_DOY), format="%Y-%j"), #make date variable
+         start_month=factor(months.Date(startDate), levels = month.name),
+         endDate=as.Date(paste0(FIRE_YEAR, "-", CONT_DOY), format="%Y-%j"),
+         end_month=factor(months.Date(endDate), levels = month.name)
+  ) %>%
+  mutate(fire_label = paste0(
+    "Cause: <b>", STAT_CAUSE_DESCR, "</b><br/>",
+    "Burned <b>", FIRE_SIZE, " acres </b><br/>",
+    "Start: ", start_month, "<br/>",
+    "End: ", end_month)
+  )
+
+#color pallete
+pal <- colorFactor(
+  palette = viridis_pal(begin = .95, end = .4, option = 'A')(3),
+  domain = fires$fire_size_category
+)
+
+#add tiles
+leaflet() %>% 
+  addTiles() %>% 
+  addPolygons(data = ca_shape,
+              color = 'white',
+              weight = 1.5,
+              opacity = 1,
+              fillColor = 'black',
+              fillOpacity = .8,
+              highlightOptions = highlightOptions(color = "#FFF1BE", 
+                                                  weight = 5),
+              popup = ~NAME) %>% 
+  addCircleMarkers(data = fires,
+                   popup = ~fire_label, #create a label with fire cause, start month, acres burned, time burned
+                   stroke = F,
+                   radius = 6,
+                   fillColor = ~pal(fire_size_category),
+                   fillOpacity = 2) %>%
+    addLegend(data = fires,
+            pal = pal,
+            values = ~fire_size_category,
+            title = "Fire Size")
+
+```
+
+This map shows the substantial power of the *leaflet* package maps over static maps. I can explore not only spatial distribution of fires but also find specific forests or towns that each wildfire touched, since the points and shapefile are overlayed on OpenStreetMap. I added labels to each point to provide more information regarding each wildfire.

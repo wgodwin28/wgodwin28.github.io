@@ -21,3 +21,11 @@
 \vspace{3em}
 
 [RShiny visualization showing time series of spending](https://wgodwin28.shinyapps.io/shiny)
+
+\vspace{3em}
+
+## United States Wildfires 1992-2015
+
+\vspace{3em}
+
+[Mapping the Most Destructive California Wildfires of 2015](ca_fires_map.html)
