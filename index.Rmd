@@ -2,12 +2,12 @@
 
 ---
 
-<img src="images/portrait_pic.JPG" style="width:25%; border:10px solid; margin-right: 20px" align="left">
+<img src="images/portrait_pic.png" style="width:25%; border:10px solid; margin-right: 20px" align="left">
 
 My name is Will Godwin. Professionally, I'm interested in research within the nexus of climate, health, and agriculture. I currently work as a Research Analyst at University of California San Francisco, managing and analyzing data from randomized-controlled trials investigating methods to reduce childhood mortality. Previously, I studied and worked in Seattle within a fellowship through the Institute for Health Metrics and Evaluation. While there, I graduated with a Masters in Public Health and spent 3 years modeling exposure and health burden due to environmental risk factors for the [Global Burden of Disease](https://www.thelancet.com/gbd) study. My MPH coursework and work experience at IHME was statistical in nature and afforded me to hone quantitative and programming abilities. 
 
-Like all personal projects, this website is a work in progress and will be added to iteratively. I have included some data projects that I worked on recently and would welcome any feedback you have. I'll steadily add more small projects and analyses as I complete them.
+Like all personal projects, this website is a work in progress and will be added to iteratively. I include some data projects that touch on topics that interest me including politics and the environment. I'll steadily add more small projects and analyses as I complete them.
 
-When I'm not working, I love to go for bike rides out in the Marin Headlands north of San Francisco.
+When I'm not working, I love to go for bike rides out in the [Marin Headlands](images/hawk_hill.JPG) north of San Francisco.
 
 My resume is available [here](files/CV-WGodwin.pdf).

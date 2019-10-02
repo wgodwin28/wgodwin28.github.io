@@ -11,7 +11,7 @@ output: html_document
 </style>
 
 This analysis was set in motion after running across extensive wildfire data on 
-[Kaggle](https://www.kaggle.com/rtatman/188-million-us-wildfires/download), published 
+[Kaggle](https://www.kaggle.com/rtatman/188-million-us-wildfires), published 
 by the national Fire Program Analysis. These data are the accumulation of federal, 
 state, and local reporting systems for wildfires and represent 1.88 million wildfires 
 from 1992-2015. Each fire is geo-located by latitude and longitude, which makes mapping 
@@ -59,7 +59,7 @@ Since preliminary data exploration is mandatory for any data project, I'll first
 some summary statistics of relevant variables within my restricted fires dataset. I do 
 display most of the code in this analysis but it can be found in full on [github](https://github.com/wgodwin28/wgodwin28.github.io).
 
-## How big are these fires?
+## Fire Size
 ```{r fire size, message=F}
 #order of the fire sizes
 fire_order <- c("100-299 acres", "300-999 acres", "1000-4999 acres","5000+ acres")
@@ -105,7 +105,7 @@ fires %>%
 
 Even when log-transformed, fire size distribution has a heavy right tail. The main takeaway here is that the burn area of most fires was less than 10,000 acres, with a few fires growing to in excess of 50,000 acres.
 
-## When do most fires start?
+## Fire Seasonality
 ```{r time series of fires, message=F}
 #aggregate and plot the time trend of number of fires
 fires %>%
@@ -122,7 +122,7 @@ fires %>%
 
 Unsurprisingly, the vast majority of fires started in the summer months of June, July, August. Notably, though, the shoulder season months of April, September, and October contained 30 fires combined, indicating that fire survelliance cannot end once summer does.
 
-### When do the most destructive fires start?
+### Fire Seasonality (acres burned)
 ```{r time series of acres burned, message=F}
 #summarize acres burned
 fires %>%
@@ -139,7 +139,7 @@ fires %>%
 
 Also fairly predictably, the monthly sum of number of acres burned closely tracks the monthly fires observed above. Fires that started in July caused the greatest destruction by far, totaling to over 500,000 acres burned.
 
-## What are the causes of the fires?
+## Primary Causes of Wildfires
 ```{r causes of fires, message=F}
 #table of counts
 fires %>%
@@ -156,7 +156,7 @@ The table above shows the counts of the causes of wildfire as well as the number
 
 
 ## Mapping the fires
-Now I finally turn toward mapping the fires. I downloaded a shapefile of california county boundaries from State of California Department of Technology [website](https://data.ca.gov/dataset/ca-geographic-boundaries).
+Now I finally turn toward mapping the fires. I downloaded a publicly avaiable shapefile of california county boundaries from the [State of California Department of Technology](https://data.ca.gov/dataset/ca-geographic-boundaries).
 
 ```{r spatial setup, echo=F}
 #make fires spatial using sf
