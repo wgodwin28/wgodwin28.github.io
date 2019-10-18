@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Will Godwin" />
+
+<meta name="date" content="2019-10-17" />
+
+<title>Cartograms of Wildfires</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">HOME</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="projects.html">Data Projects</a>
+</li>
+<li>
+  <a href="papers.html">Papers</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="contact.html">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://github.com/wgodwin28">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/will-godwin-03a106150/">
+    <span class="fa fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Cartograms of Wildfires</h1>
+<h4 class="author">Will Godwin</h4>
+<h4 class="date">10/17/2019</h4>
+
+</div>
+
+
+<p>Cartograms can be a useful tool to illustrate relative differences across space within a map. Here I combine animate cartograms, using the <em>cartogram</em> and <em>gganimate</em> packages, to show state-level trends over time. To get access to these data, refer to my <a href="ca_fires_map.html">previous post</a> that includes a link to the data</p>
+<pre class="r"><code>#necessary libs
+library(RSQLite); library(raster); library(tidyverse); library(scales)
+library(sf); library(viridis); library(lubridate); library(gifski);
+library(cartogram); library(gganimate); library(maptools); library(purrr)
+
+#Read in wildfire data-it&#39;s in SQLite format so we&#39;ll query the local db
+db &lt;- dbConnect(SQLite(), dbname=&quot;~/Desktop/fires/data/FPA_FOD_20170508.sqlite&quot;)
+fires &lt;- dbGetQuery(db, &quot;SELECT * FROM Fires&quot;)
+
+#read in shapefile of US states
+shape &lt;- shapefile(&quot;~/Desktop/fires/data/states_21basic/states.shp&quot;)
+
+#set coordinate reference system for later specification
+crs = st_crs(4269)</code></pre>
+<p>After pulling in the fires data and U.S. shapefile, I loop through each year in the data-from 1992 to 2015-and tabulate the number of fires that burned 100 acres or greater by state. Within the loop, I merge this tabulated onto the shapefile and convert it to an sf object so that I can easily manipulate and plot it using <em>ggplot2</em>. Then I bind all years together to produce an data frame/sf object with total fires &gt;100 acres by state from 1992-2015. Finally, I plot the data with animation.</p>
+<pre class="r"><code>#loop through each year and calculate total fires &gt;100 acres
+fire_list &lt;- lapply(unique(fires$FIRE_YEAR), function(yr){
+  #calculate total fires
+  fires_temp &lt;- fires %&gt;%
+    filter(STATE %in% setdiff(STATE, c(&quot;HI&quot;, &quot;AK&quot;)) &amp; FIRE_YEAR==yr) %&gt;%
+    mutate(fire_big = case_when(
+      FIRE_SIZE&gt;=100 ~ 1,
+      FIRE_SIZE&lt;100  ~ 0)
+    ) %&gt;%
+    group_by(FIRE_YEAR, STATE_ABBR=STATE) %&gt;%
+    summarise(num_fires=sum(fire_big))
+  
+  #merge shapefile with fire data
+  shape_temp &lt;- merge(shape, fires_temp, by=&quot;STATE_ABBR&quot;, all.x=F)
+  
+  #convert shape to sf object for ggplot
+  fires_sf &lt;- st_as_sf(shape_temp, crs=crs)
+  return(fires_sf)
+})
+
+#bind together list of sf objects
+fires_all &lt;- reduce(fire_list, sf:::rbind.sf)
+
+#ggaminate wildfires
+p &lt;- ggplot(data = fires_all %&gt;% 
+              arrange(FIRE_YEAR)) + 
+  geom_sf(aes(geometry=geometry, fill=num_fires)) +
+  coord_sf(datum = NA) +
+  transition_manual(FIRE_YEAR) +
+  labs(title = &#39;Total Fires &gt;100 Acres Burned Map-Year:{current_frame}&#39;) +
+  scale_fill_viridis_c(name=&quot;Fires&quot;, trans=&quot;log10&quot;)
+animate(p, nframes = 100, fps = 2)</code></pre>
+<p><img src="fires_cartogram_files/figure-html/basic%20animate-1.gif" /><!-- --></p>
+<p>The result shows an animated progression of wild fire totals across the U.S. over a few decades. Note that I log transform the count of fires to reduce the influence of outliers like Texas and California on the map scale.</p>
+<p>Now to actually show a progression of animated cartograms, I run a similar loop across all years but this time I calculate the cartogram and convert back to an sf object. I won’t dive into the underlying mechanics of calculating a cartogram but the product can be helpfully referred to as a <em>value by area map</em>. In which the area of each state, in this case, is proportional to the number of wild fires &gt;100 acres occurring there.</p>
+<pre class="r"><code>#loop through each year and calculate total fires &gt;100 acres
+fire_list &lt;- lapply(unique(fires$FIRE_YEAR), function(yr){
+  #calculate total fires
+  fires_temp &lt;- fires %&gt;%
+    filter(STATE %in% setdiff(STATE, c(&quot;HI&quot;, &quot;AK&quot;)) &amp; FIRE_YEAR==yr) %&gt;%
+    mutate(fire_big = case_when(
+      FIRE_SIZE&gt;=100 ~ 1,
+      FIRE_SIZE&lt;100  ~ 0)
+    ) %&gt;%
+    group_by(FIRE_YEAR, STATE_ABBR=STATE) %&gt;%
+    summarise(num_fires=sum(fire_big))
+  
+  #merge shapefile with fire data
+  shape_temp &lt;- merge(shape, fires_temp, by=&quot;STATE_ABBR&quot;, all.x=F)
+  
+  #calculate cartogram
+  cart_temp &lt;- cartogram_cont(shape_temp, &quot;num_fires&quot;, itermax=7)
+  
+  #convert shape to sf object for ggplot
+  fires_sf &lt;- st_as_sf(cart_temp, crs=crs)
+  return(fires_sf)
+})
+
+#bind together list of sf objects
+fires_all_cart &lt;- reduce(fire_list, sf:::rbind.sf)
+
+#gganimate cartograms of wildfires
+p &lt;- ggplot(data = fires_all_cart %&gt;% 
+              arrange(FIRE_YEAR)) + 
+  geom_sf(aes(geometry=geometry, fill=num_fires)) +
+  coord_sf(datum = NA) +
+  transition_manual(FIRE_YEAR) +
+  labs(title = &#39;Total Fires &gt;100 Acres Burned Cartogram-Year: {current_frame}&#39;) +
+  scale_fill_viridis_c(name=&quot;Fires&quot;, trans=&quot;log10&quot;)
+animate(p, nframes = 100, fps = 2)</code></pre>
+<p><img src="fires_cartogram_files/figure-html/calc%20cartogram-1.gif" /><!-- --></p>
+<p>The resulting cartogram animation is similar to the unmanipulated map above through the 1990s. But as we progress toward the 2000s, some states, particularly Texas and the midwest, experience significantly larger number of fires. Watch Texas in particular. We see it peak in 2008, with over 1000 fires in excess of 100 acres burned. Now I’ll show the same maps except I plot number of acres burned for all fires for a given state-year combination. I’ll exclude the code for those since it’s almost similar to what’s above but you can find it on my site’s <a href="https://github.com/wgodwin28/wgodwin28.github.io">github repo</a> as well.</p>
+<p><img src="fires_cartogram_files/figure-html/acres%20burned%20animate-1.gif" /><!-- --></p>
+<p>The normal map shows a stark east-west pattern, where western states have more acres burned, that remains consistent through time. The northeastern U.S. has had relatively few acres burned which, all things being equal, is to be expected given that northeastern states are comparatively smaller. A few periods in the mid 2000s pop up as high burn years in the West but, overall, it’s tough to glean any other time trends.</p>
+<p><img src="fires_cartogram_files/figure-html/calc%20acres%20burned%20cartogram-1.gif" /><!-- --></p>
+<p>Above shows the cartogram of acres burned. The advantage of this type of map is the ability to further emphasize spatial or temporal trends, or enable actually identifying other patterns. Such as how this visual really highlights the proliferation of more destructive fires in the West around the mid 2000s. Additionally, I could have calculated the cartogram boundaries based off another variable, such as population, to add another dimension to the map that may be related to wild fire intensity. Maybe that we come in future posts.</p>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

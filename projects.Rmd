@@ -29,3 +29,7 @@
 \vspace{3em}
 
 [Mapping the Most Destructive California Wildfires of 2015](ca_fires_map.html)
+
+\vspace{3em}
+
+[Wildfire Cartograms in U.S.](fires_cartogram.html)
