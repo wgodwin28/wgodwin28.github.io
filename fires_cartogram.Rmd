@@ -137,7 +137,7 @@ p <- ggplot(data = fires_all %>%
 animate(p, nframes = 100, fps = 2)
 ```
 
-The normal map shows a stark east-west pattern, where western states have more acres burned, that remains consistent through time. The northeastern U.S. has had relatively few acres burned which, all things being equal, is to be expected given that northeastern states are comparatively smaller. A few periods in the mid 2000s pop up as high burn years in the West but, overall, it's tough to glean any other time trends.
+The unadulterated map shows a stark east-west pattern, where western states have more acres burned, that remains consistent through time. The northeastern U.S. has had relatively few acres burned which, all things being equal, is to be expected given that northeastern states are relatively smaller. A few periods in the mid 2000s pop up as high burn years in the West but, overall, it's tough to glean any other time trends.
 
 ```{r calc acres burned cartogram, warning=F, message=F, echo=F}
 #loop through each year and calculate total fires >100 acres
@@ -173,4 +173,4 @@ p <- ggplot(data = fires_all_cart %>%
 animate(p, nframes = 100, fps = 2)
 ```
 
-Above shows the cartogram of acres burned. The advantage of this type of map is the ability to further emphasize spatial or temporal trends, or enable actually identifying other patterns. Such as how this visual really highlights the proliferation of more destructive fires in the West around the mid 2000s. Additionally, I could have calculated the cartogram boundaries based off another variable, such as population, to add another dimension to the map that may be related to wild fire intensity. Maybe that we come in future posts.
+Using the same data as the previous "Acres Burned" map, this cartogram provides an added dimension. The advantage of this type of map is the ability to further emphasize spatial or temporal trends, or enable the identification of other patterns. One pattern clearly shown is how this visual really highlights the proliferation of more destructive fires in the West around the mid 2000s. Additionally, I could have calculated the cartogram boundaries based off another variable, such as population, to add another dimension to the map that may be related to wild fire intensity. Maybe that will come in future posts.

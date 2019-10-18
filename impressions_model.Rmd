@@ -11,7 +11,6 @@ output: html_document
 rm(list=ls())
 
 #load libs
-library(data.table)
 library(ggplot2)
 library(scales)
 library(lubridate)
@@ -36,7 +35,8 @@ vars_keep <- c("Ad_Type", "Regions", "Advertiser_ID", "Date_Range_Start", "Date_
 
 #subset to variables of interest and create useful variables
 dt <- dt %>%
-  select(vars_keep) %>% #keep relevant variables
+  dplyr::select(vars_keep) %>% #keep relevant variables
+  filter(!is.na(Num_of_Days) & !is.na(Regions) & !is.na(Ad_Type)) %>%
   mutate(startYear = substr(Date_Range_Start,1,4), #variable indicating year ad started
          Region = ifelse(grepl("EU", Regions), "EU", "US") %>% as.factor(), #create cleaner regions variable
          month_year = format(as.Date(Date_Range_Start), "%m-%Y"),
@@ -47,8 +47,10 @@ dt <- dt %>%
                   labels = c("0-100", "100-1k", "1k-50k", "50k-100k", "100k+")),
          Spend_Range_Min_USD = as.factor(Spend_Range_Min_USD),
          Ad_Type = as.factor(Ad_Type),
-         Impressions = factor(Impressions, levels = c("≤ 10k", "10k-100k", "100k-1M", "1M-10M", "> 10M"),
-                              labels = c("Under 10k", "10k-100k", "100k-1M", "1M-10M", "10M+")))
+         Impressions = factor(Impressions, 
+                              levels = c("≤ 10k", "10k-100k", "100k-1M", "1M-10M", "> 10M"),
+                              labels = c("Under 10k", "10k-100k", 
+                                         "100k-1M", "1M-10M", "10M+")))
 
   #filter(regions=="US") #only include US data
 dt <- dt %>%
@@ -156,18 +158,19 @@ response <- "Impressions"
 covariates <- c("Num_of_Days", "Region", "Ad_Type", "cost_cat")
 
 #create training data frame
+set.seed(2^9)
 train <- sample(c(TRUE, FALSE), nrow(dt), rep=TRUE)
 dt.train <- dt %>%
-  select(response, covariates) %>%
-  filter(train)
+  dplyr::select(response, covariates) %>%
+  filter(train & !is.na(cost_cat))
 
 dt.test <- dt %>%
-  select(response, covariates) %>%
-  filter(!train)
+  dplyr::select(response, covariates) %>%
+  filter(!train & !is.na(cost_cat))
 
 #extract the testing response and predictors for prediction
-x.test <- dt.test %>% select(covariates)
-y <- dt.test %>% select(response)
+x.test <- dt.test %>% dplyr::select(covariates)
+y <- dt.test %>% dplyr::select(response)
 
 #create standard formula object
 mod.formula <- as.formula(paste(response, 
@@ -183,7 +186,7 @@ model1 <- vglm(formula = mod.formula,
              data = dt.train, family = "multinomial")
 
 #extract model summary
-summary(model1)
+#summary(model1)
 
 #Predict using the model
 probability <- predict(model1, x.test, type="response")
@@ -195,7 +198,8 @@ dt.test <- dt.test %>%
                                     predicted_cat==4 ~ "1M-10M",
                                     predicted_cat==5 ~ "10M+"),
          predicted_name = factor(predicted_name, 
-                                 levels = c("Under 10k", "10k-100k", "100k-1M", "1M-10M", "10M+")))
+                                 levels = c("Under 10k", "10k-100k", 
+                                            "100k-1M", "1M-10M", "10M+")))
 
 #Accuracy of the model
 mtab <- table(dt.test$predicted_name, dt.test$Impressions)
@@ -212,7 +216,7 @@ Model evaluation can be based on overall accuracy of the model or on more specif
 model2 <- randomForest(mod.formula, data = dt.train)
 
 #Summarize the model
-summary(model2)
+#summary(model2)
 
 #Predict using the model
 dt.test$pred_randomforest <- predict(model2, x.test)
@@ -234,7 +238,7 @@ model3 <- C5.0(mod.formula, data = dt.train, trials = 8)
 dt.test$pred_c50 <- predict(model3, x.test)
 
 #Accuracy of the model
-mtab3 <- table(dt.test$pred_c50, dt.test$Impression)
+mtab3 <- table(dt.test$pred_c50, dt.test$Impressions)
 confusionMatrix(mtab3)
 ```
 
@@ -254,7 +258,7 @@ summary(model5)
 dt.mod$pred_svm <- predict(model5, x, type="response")
 
 #Accuracy of the model
-mtab5 <- table(dt.mod$pred_svm, dt.mod$Impression)
+mtab5 <- table(dt.mod$pred_svm, dt.mod$Impressions)
 confusionMatrix(mtab5)
 ```
 
