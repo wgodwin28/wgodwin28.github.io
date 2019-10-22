@@ -314,7 +314,8 @@ $(document).ready(function () {
 </div>
 
 
-<p>##Start-up</p>
+<div id="start-up" class="section level2">
+<h2>Start-up</h2>
 <p>The goal is to build a model that predicts “impressions”, or the number of people the ad reached, using relevant advertisement covariates. I’ll use political advertisement spending data released by google. The dataset contains over 200,000 unique ads since June 2018 with relevant metadata including <em>number of impressions</em> as a ordinal categorical variable. Intially, I need to figure out useful predictors in the model by investigating the univariate distributions and basic bivariate relationships.</p>
 <pre class="r"><code>#find date when data was downloaded last
 dwnld_date &lt;- file.info(&quot;~/Desktop/google_ads/data/google-political-ads-transparency-bundle/&quot;)$atime %&gt;% as.Date()
@@ -365,7 +366,11 @@ dt &lt;- dt %&gt;%
     )
   )</code></pre>
 <p>Load in the dataset and prep it for visualizing and modeling.</p>
-<p>##Data Exploration ###Impressions</p>
+</div>
+<div id="data-exploration" class="section level2">
+<h2>Data Exploration</h2>
+<div id="impressions" class="section level3">
+<h3>Impressions</h3>
 <pre class="r"><code>#impressions
 ggplot(dt, aes(Impressions)) +
   geom_bar() +
@@ -373,7 +378,10 @@ ggplot(dt, aes(Impressions)) +
   theme_bw()</code></pre>
 <p><img src="impressions_model_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <p>Most ads are classified under the “Under 10k” category, indicating an imbalanced classification problem. Due to this imbalance, I’ll plot impression counts on the log scale to observe differences at smaller frequecies.</p>
-<p>###Ad cost One might presume that money spent for an ad would be an excellent predictor of impressions, given that that most tech platforms follow an advertising model of more money spent = more exposure. Google provides dollars spent as a categorical variable of 5 bins. Let’s see how well ad dollars spent and number of impressions correlate.</p>
+</div>
+<div id="ad-cost" class="section level3">
+<h3>Ad cost</h3>
+<p>One might presume that money spent for an ad would be an excellent predictor of impressions, given that that most tech platforms follow an advertising model of more money spent = more exposure. Google provides dollars spent as a categorical variable of 5 bins. Let’s see how well ad dollars spent and number of impressions correlate.</p>
 <pre class="r"><code>table(dt$Impressions, dt$cost_cat)</code></pre>
 <pre><code>##            
 ##              0-100 100-1k 1k-50k 50k-100k  100k+
@@ -383,7 +391,9 @@ ggplot(dt, aes(Impressions)) +
 ##   1M-10M        22    656   2247        0      0
 ##   10M+           0      0    284        0      0</code></pre>
 <p>Since “ad cost” and “impressions” variables are both ordinal, 5-bin variables, if one was to map the categories to each other on 1 to 1 basis, we could calculate accuracy of a model that solely used “ad cost” to predict “impressions”. And turns out, it would be correct 61.4% of the time! This tells us two things: money spent on ads is a primary driver of total impressions <em>but</em> it’s not the only driver. Maybe we can find other predictors in the data set that could improve our future model’s accuracy.</p>
-<p>###Temporal trends</p>
+</div>
+<div id="temporal-trends" class="section level3">
+<h3>Temporal trends</h3>
 <pre class="r"><code>#time series plot of ad counts across impression category
 dt %&gt;%
   group_by(date=as.Date(week_start), Impressions) %&gt;%
@@ -403,7 +413,9 @@ dt %&gt;%
 <p><img src="impressions_model_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>In order to assess whether date of ad may be related to number of impressions, I aggregated the number of ads by week of ad start date and impression category. Then I plotted the number of ads across the full time series, colored by impression category, and fit a loess smoother through each. The loess, in this case, is a helpful way to explore time trends in the data.</p>
 <p>There does seem to be some relationship, albeit non-linear, between number of ads and ad start date. Ad counts, regardless of impression category, appear to increase up the the 2018 midterm election. However, the time trend is similar across the different impression categories-note the similar shapes for each loess curve. In other words, the relative fraction each impression category comprises, with reference to the impression envelope, does not change much over time. So I’ll hold off on including a time variable in my model for now.</p>
-<p>###Impressions by region</p>
+</div>
+<div id="impressions-by-region" class="section level3">
+<h3>Impressions by region</h3>
 <pre class="r"><code>#plot impression counts by region
 ggplot(dt, aes(Impressions, fill=Region)) +
   geom_bar(position = &quot;dodge&quot;) +
@@ -412,7 +424,9 @@ ggplot(dt, aes(Impressions, fill=Region)) +
   theme_bw()</code></pre>
 <p><img src="impressions_model_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Above is a bar chart showing counts of each impression category across the two regions: EU and US. Note that these frequencies were plotted on a log 10 scale in order to illustrate relative frequencies within the lower frequency categories (100k-1M impressions, etc). The EU has fewer ads within each category and appears to have a greater proportion of its ads with &gt;10k impressions compared to the U.S., which indicates that this variable may be a useful covariate in the model.</p>
-<p>###Impressions by ad type</p>
+</div>
+<div id="impressions-by-ad-type" class="section level3">
+<h3>Impressions by ad type</h3>
 <pre class="r"><code>#plot impression counts by type of ad
 ggplot(dt, aes(Impressions, fill=Ad_Type)) +
   geom_bar(position = &quot;dodge&quot;) +
@@ -421,7 +435,9 @@ ggplot(dt, aes(Impressions, fill=Ad_Type)) +
   theme_bw()</code></pre>
 <p><img src="impressions_model_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>This figure shows counts (on log 10 scale) of ads across impression category for each type of ad. “Image” ads remain the most popular type across impression category, while “Text” ads significantly decrease as number of impressions increase, relatively to other ad types.</p>
-<p>###Days ad aired</p>
+</div>
+<div id="days-ad-aired" class="section level3">
+<h3>Days ad aired</h3>
 <pre class="r"><code>dt %&gt;%
   mutate(days_running=difftime(Date_Range_End, Date_Range_Start, units = &quot;days&quot;)) %&gt;%
   ggplot(aes(Impressions, days_running)) +
@@ -431,7 +447,10 @@ ggplot(dt, aes(Impressions, fill=Ad_Type)) +
 <p><img src="impressions_model_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>This figure shows box and whiskers of number of days ad was aired across impression category. While these data do look noisy, we see indication of a potential trend: as ad air time increases so does the number of impressions.</p>
 <p>Based on the exploratory plots and tables, the covariates we’ll use to predict impressions are: <em>cost of the ad</em>, <em>ad type</em> (text, video, or image), <em>region the ad aired</em> (U.S. or E.U.), and <em>number of days the ad aired</em>.</p>
-<p>##Modeling</p>
+</div>
+</div>
+<div id="modeling" class="section level2">
+<h2>Modeling</h2>
 <pre class="r"><code>#model reponse and covariates
 response &lt;- &quot;Impressions&quot;
 covariates &lt;- c(&quot;Num_of_Days&quot;, &quot;Region&quot;, &quot;Ad_Type&quot;, &quot;cost_cat&quot;)
@@ -455,7 +474,8 @@ y &lt;- dt.test %&gt;% dplyr::select(response)
 mod.formula &lt;- as.formula(paste(response, 
                             paste(covariates, collapse = &quot;+&quot;), sep = &quot; ~ &quot;))</code></pre>
 <p>We’ll model impressions using 3 different methods: logistic regression and two tree-based methods. Logistic is helpful as a first pass since it generally performs well and produces interpretable coefficients. The data will be ramdomly split into a training and testing set for evaluation of model performance.</p>
-<p>###Multinomial logistic regression</p>
+<div id="multinomial-logistic-regression" class="section level3">
+<h3>Multinomial logistic regression</h3>
 <pre class="r"><code>#Build the model
 model1 &lt;- vglm(formula = mod.formula, 
              data = dt.train, family = &quot;multinomial&quot;)
@@ -522,7 +542,9 @@ confusionMatrix(mtab)</code></pre>
 ## Balanced Accuracy         0.556213   0.5000000</code></pre>
 <p>The confusion matrix shows the model predictions (row-wise) stacked against the actual data (column-wise). If the model fit the data perfectly, we’d only see values along the diagonal and would see zeros everywhere else. The overall accuracy is 85%, indicating that the model correctly labels the testing data 85% of the time. Sensitivity (we’ll use “recall”) and specificity varies across the impression categories, as we’d expect. When predicting “Under 10k” impressions, a recall of 0.98 indicates that the model get 98% of the actual “Under 10k” impressions correct. The relatively poor specificity indicates that the model correctly predicts that an ad will NOT get “Under 10k” impressions 63% of the time. We see the opposite result from the “10M+” impressions category. Because we have an imbalanced classification problem with so few “10M+” impression ads, the model can predict that an ad will not get “10M+” impressions with 99.99% confidence. However, recall of 0.13 reveals that 87% of actual “10M+” impression ads are incorrectly labeled by the model.</p>
 <p>Model evaluation can be based on overall accuracy of the model or on more specific metrics like precision or recall, depending on the research question. For instance, consider that the goal of many political action committees (PAC) is to reach as many people as possible using as little money as possible. In order to figure out how to do this, they could start with looking at what covariates are conditionally associated with number of impressions from the logistic model coefficients. We can see that even controlling for ad cost, an ad with longer air time tends to achieve more impression. Going even further, they could build a model that optimizes for their main goal-accurately predicting ads with millions of impressions or recall. As we noted, the logistic model above has poor recall for impression categories of particular interest as it correctly labels a “1-10M” impression ad only 10% of the time and a “10M+” impression ad only 13% of the time. Compare this to our original “model, that simply used the cost of ad to predict impressions, which had a recall for”10M+" of 9%. Both models leave room for improvement. Let’s see if we can improve the recall at the high impression end using a tree-based models.</p>
-<p>###Random Forest</p>
+</div>
+<div id="random-forest" class="section level3">
+<h3>Random Forest</h3>
 <pre class="r"><code>#Build the model
 model2 &lt;- randomForest(mod.formula, data = dt.train)
 
@@ -577,7 +599,9 @@ confusionMatrix(mtab2)</code></pre>
 ## Detection Prevalence      0.002848   0.0002208
 ## Balanced Accuracy         0.591304   0.5899067</code></pre>
 <p>Compared to multinomial logistic regression, random forest does perform better for lower frequency classes like “1-10M” and “10M+”. Despite doubling the recall observed in logistic regression, a model that correctly labels an ad to get “10M+” impressions only 30% of the time leaves a lot to be desired. Outside of the scope of this analysis but in an effort to improve recall, we could oversample the minority impression categories. This has the effect of balancing out the distribution of impressions and would likely improve prediction in minority categories. The overall accuracy of the random forest model is similar to the logisitic regression at 85%, indicating that the gains made in recall for high impression classes may have come at cost for other components of model performance.</p>
-<p>###Boosted C5.0</p>
+</div>
+<div id="boosted-c5.0" class="section level3">
+<h3>Boosted C5.0</h3>
 <pre class="r"><code>#Build the model
 model3 &lt;- C5.0(mod.formula, data = dt.train, trials = 8)
 
@@ -630,6 +654,8 @@ confusionMatrix(mtab3)</code></pre>
 ## Balanced Accuracy          0.50000   0.5000000</code></pre>
 <p>A Boosted C5.0 model is based on simple tree-based framework that uses “boosting” methods. While a random forest splits the predictor space on into partitions that minimize impurity/maximize information criterion for each independent tree, boosting models grow trees sequentially with the residuals of the previous tree becoming the response variable of the subsequent tree. While this smoothing over residuals may sometimes improve model performance, in this context, the random forest performed slightly better overall.</p>
 <p>There are a variety of other models one could use to classify impressions from naive Bayes to support vector machines, which could lead to improved overall accuracy and improved recall. There’s also feature engineering that we didn’t investigate at length (like lagged variables or midterm-related associations). Those pursuits are fodder for future projects. The takeaway from this analysis is that logistic regression, while some times not as accurate, still can construct a useful springboard for further analyses due to its interpretability. And regression trees-random forests and boosting methods-can be fast, flexible frameworks for optimizing toward a specific performance metric.</p>
+</div>
+</div>
 
 
 
