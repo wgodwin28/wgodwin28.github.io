@@ -7,6 +7,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
@@ -71,9 +72,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -87,7 +86,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -192,8 +190,6 @@ $(document).ready(function () {
 });
 </script>
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
 
 <style type="text/css">
@@ -250,20 +246,17 @@ $(document).ready(function () {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -321,10 +314,10 @@ $(document).ready(function () {
 
 <hr />
 <hr />
-<p><img src="images/portrait_pic.JPG" style="width:25%; border:10px solid; margin-right: 20px" align="left"></p>
+<p><img src="images/portrait_pic.png" style="width:25%; border:10px solid; margin-right: 20px" align="left"></p>
 <p>My name is Will Godwin. Professionally, I’m interested in research within the nexus of climate, health, and agriculture. I currently work as a Research Analyst at University of California San Francisco, managing and analyzing data from randomized-controlled trials investigating methods to reduce childhood mortality. Previously, I studied and worked in Seattle within a fellowship through the Institute for Health Metrics and Evaluation. While there, I graduated with a Masters in Public Health and spent 3 years modeling exposure and health burden due to environmental risk factors for the <a href="https://www.thelancet.com/gbd">Global Burden of Disease</a> study. My MPH coursework and work experience at IHME was statistical in nature and afforded me to hone quantitative and programming abilities.</p>
-<p>Like all personal projects, this website is a work in progress and will be added to iteratively. I have included some data projects that I worked on recently and would welcome any feedback you have. I’ll steadily add more small projects and analyses as I complete them.</p>
-<p>When I’m not working, I love to go for bike rides out in the Marin Headlands north of San Francisco.</p>
+<p>Like all personal projects, this website is a work in progress and will be added to iteratively. It serves as a tool for my own growth in writing, coding, and statistics. Included are some data projects centered on topics that interest me including politics and the environment. In the spirit of transparency and reproducibility I use publicly available data and publish or direct readers to the underlying R code since I’ve benefitted immensely from members of the R/stats community publishing their code and explaining their methods. Plus, as a scientific principle, any researcher should strive for transparency and reproducibility when possible. I’ll steadily add more small projects and analyses as I complete them.</p>
+<p>When I’m not working, I love to go for bike rides out in the <a href="images/hawk_hill.JPG">Marin Headlands</a> north of San Francisco.</p>
 <p>My resume is available <a href="files/CV-WGodwin.pdf">here</a>.</p>
 
 
@@ -344,6 +337,23 @@ $(document).ready(function () {
 
 
 </script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

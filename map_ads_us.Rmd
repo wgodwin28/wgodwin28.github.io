@@ -27,16 +27,11 @@ s_pop <- as.data.table(shape)[,.(STATE_NAME, STATE_ABBR)]
 #from here: https://www.arcgis.com/home/item.html?id=f7f805eb65eb4ab787a0a3e1116ca7e5
 
 #subset shapefile
-# shape <- shape %>%
-#   filter(HASC_1 != "US.DC") %>%
-#   mutate(state_var=substr(HASC_1,4,5)) %>%
-#   select(state_var)
-
 shape <- shape %>%
   filter(STATE_ABBR != "AK") %>%
   filter(STATE_ABBR != "HI") %>%
   mutate(state_var=STATE_ABBR) %>%
-  select(state_var, STATE_NAME)
+  dplyr::select(state_var, STATE_NAME)
 
 #read in data
 dt <- fread("~/Desktop/google_ads/data/google-political-ads-geo-spend.csv")
@@ -47,11 +42,11 @@ dt <- dt %>%
   group_by(Country_Subdivision_Primary) %>%
   summarise(spending=sum(Spend_USD)) %>%
   mutate(state_var=substr(Country_Subdivision_Primary, 4, 5)) %>%
-  select(spending, state_var)
+  dplyr::select(spending, state_var)
 
 #merge together
 shape.data <- inner_join(shape, dt, by="state_var") %>%
-  select(spending, state_var, STATE_NAME)
+  dplyr::select(spending, state_var, STATE_NAME)
 
 ```
 #Intro

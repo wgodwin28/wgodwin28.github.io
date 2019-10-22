@@ -31,7 +31,7 @@ shape <- shape %>%
   filter(STATENAME != "Hawaii") %>%
   left_join(states, by=c("STATENAME")) %>%
   mutate(cong_dis = paste0(state_abr, "-", DISTRICT)) %>%
-  select(cong_dis, state_abr)
+  dplyr::select(cong_dis, state_abr)
 
 #read in ad data
 dt <- fread("~/Desktop/google_ads/data/google-political-ads-geo-spend.csv")
@@ -44,11 +44,11 @@ dt <- dt %>%
   mutate(state_var = substr(Country_Subdivision_Secondary, 4, 11), 
          state = substr(Country_Subdivision_Secondary, 1, 2)) %>%
   filter(state_var != "AT LARGE") %>%
-  select(spending, cong_dis=Country_Subdivision_Secondary, state)
+  dplyr::select(spending, cong_dis=Country_Subdivision_Secondary, state)
 
 #merge together
 shape.data <- inner_join(shape, dt, by="cong_dis") %>%
-  select(spending, state, cong_dis)
+  dplyr::select(spending, state, cong_dis)
 ```
 
 ```{r plot, echo=F}
