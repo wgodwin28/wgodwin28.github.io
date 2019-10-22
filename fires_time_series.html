@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Will Godwin" />
+
+<meta name="date" content="2019-10-21" />
+
+<title>Wildfire Time Series Decomposition</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">HOME</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="projects.html">Data Projects</a>
+</li>
+<li>
+  <a href="papers.html">Papers</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="contact.html">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://github.com/wgodwin28">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/will-godwin-03a106150/">
+    <span class="fa fa-linkedin fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Wildfire Time Series Decomposition</h1>
+<h4 class="author">Will Godwin</h4>
+<h4 class="date">10/21/2019</h4>
+
+</div>
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Time series data consist of a metric that’s measured over regular intervals. Within the wild fires dataset, we can create a time series by aggregating a metric, like number of wildfires burning &gt;100 acres, across a prudent time interval. The purpose of this post is to decompose our time series of wildfire counts and identify its constituent patterns in an effort to understand the underlying data-generating process. The 3 main patterns we’ll examine, and standard in time series analysis, is trend-cycle patterns, seasonal patterns, and the remainder component (anything not contained in first two components). Detailed explanations of these components are beyond the scope of this post but can be found <a href="https://otexts.com/fpp2/decomposition.html">here</a>. Detecting the strength to which each of these components influence our data can be useful from a policy perspective. For example, if we found a strong seasonal trend in wildfire counts (very likely!), fire-fighting agencies could make sure to prioritize resources within those high fire seasons and deprioritize otherwise.</p>
+<p>Here, I decompose a time series of wild fire counts into 3 parts: overall trend component, seasonal component, and a remainder component (hereafter “random noise”). I predict to see an overall trend of increasing wildfires from 2006-2015. Additionally, I expect to see a strong seasonal pattern (intially substantiated in my previous <a href="ca_fires_map.html">post</a>), with the majority of wildfires starting in summer months.</p>
+</div>
+<div id="deciding-on-aggregation-metric" class="section level1">
+<h1>Deciding on aggregation metric</h1>
+<p>First, to create a metric with regular intervals, we’ll need to decide on the time window for aggregation (by day, week, month, season, year?). This decision will be made by visual assessment of observed trend. I’ve loaded and processed the wildfire data as I’ve done in previous posts and viewable on my <a href="https://github.com/wgodwin28/wgodwin28.github.io">github</a> if interested. Below I plot out the trend after aggregating by day, week, month, season, and year.</p>
+
+<pre class="r"><code>#####################################################################
+#aggregate to daily
+#####################################################################
+fires %&gt;%
+  filter(FIRE_SIZE&gt;=100) %&gt;%
+  mutate(startDate=as.Date(paste0(FIRE_YEAR, &quot;-&quot;, DISCOVERY_DOY), 
+                           format=&quot;%Y-%j&quot;)) %&gt;% #make date variable
+  group_by(startDate) %&gt;%
+  count() %&gt;%
+  filter(!is.na(startDate)) %&gt;% #some fires missing dates for some reason
+  complete(startDate=seq.Date(min(startDate), max(startDate), by=&quot;day&quot;)) %&gt;%
+  ggplot(aes(startDate, n)) +
+    geom_point() +
+    geom_line() +
+    ggtitle(&quot;Aggregate by Day&quot;) +
+    theme_bw() +
+    xlab(&quot;Date&quot;) +
+    ylab(&quot;Wildfires&quot;)</code></pre>
+<p><img src="fires_time_series_files/figure-html/aggregation%20plots-1.png" width="672" /></p>
+<pre class="r"><code>#####################################################################
+#aggregate to weekly
+#####################################################################
+fires %&gt;%
+  filter(FIRE_SIZE&gt;=100) %&gt;%
+  mutate(startDate=as.Date(paste0(FIRE_YEAR, &quot;-&quot;, DISCOVERY_DOY), 
+                           format=&quot;%Y-%j&quot;), #make date variable
+         week_var=as.Date(paste0(FIRE_YEAR, &quot;-&quot;, week(startDate), &quot;-&quot;, 1), 
+                          format=&quot;%Y-%U-%u&quot;)) %&gt;%
+  group_by(week_var) %&gt;%
+  count() %&gt;%
+  filter(!is.na(week_var)) %&gt;% #some fires missing dates for some reason
+  complete(week_var=seq.Date(min(week_var), max(week_var), by=&quot;week&quot;)) %&gt;%
+  ggplot(aes(week_var, n)) +
+    geom_point() +
+    geom_line() +
+    ggtitle(&quot;Aggregate by Week&quot;) +
+    theme_bw() +
+    xlab(&quot;Date&quot;) +
+    ylab(&quot;Wildfires&quot;)</code></pre>
+<p><img src="fires_time_series_files/figure-html/aggregation%20plots-2.png" width="672" /></p>
+<pre class="r"><code>#####################################################################
+#aggregate to monthly
+#####################################################################
+fires_month &lt;- fires %&gt;%
+  filter(FIRE_SIZE&gt;=100 &amp; !is.na(DISCOVERY_DOY)) %&gt;%
+  mutate(fires=1,
+         startDate=as.Date(paste0(FIRE_YEAR, &quot;-&quot;, DISCOVERY_DOY), 
+                           format=&quot;%Y-%j&quot;), #make date variable
+         month_var=as.Date(paste0(FIRE_YEAR, &quot;-&quot;, month(startDate),&quot;-01&quot;),
+                           &quot;%Y-%m-%d&quot;)) %&gt;% #make month variable
+  group_by(month_var, FIRE_YEAR) %&gt;%
+  count() %&gt;%
+  complete(month_var=seq.Date(min(month_var), max(month_var), 
+                              by=&quot;month&quot;)) %&gt;%
+  mutate(month_name=month(month_var, label = T))
+
+ggplot(fires_month, aes(month_var, n)) +
+  geom_point() +
+  geom_line() +
+  ggtitle(&quot;Aggregate by Month&quot;) +
+  theme_bw() +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Wildfires&quot;)</code></pre>
+<p><img src="fires_time_series_files/figure-html/aggregation%20plots-3.png" width="672" /></p>
+<pre class="r"><code>#####################################################################
+#aggregate to season (winter, summer, etc)
+#####################################################################
+fires_season &lt;- fires_month %&gt;%
+  mutate(month=month(month_var),
+         season=case_when(
+           month %in% c(1,2,3) ~ &quot;Winter&quot;,
+           month %in% c(4,5,6) ~ &quot;Spring&quot;,
+           month %in% c(7,8,9) ~ &quot;Summer&quot;,
+           month %in% c(10,11,12) ~ &quot;Fall&quot;)
+         ) %&gt;%
+  group_by(season, FIRE_YEAR) %&gt;%
+  summarise(n_fires=sum(n), date=mean(month_var)) %&gt;%
+  arrange(date)
+
+ggplot(fires_season, aes(date, n_fires)) +
+  geom_point() +
+  geom_line() +
+  ggtitle(&quot;Aggregate by Season&quot;) +
+  theme_bw() +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Wildfires&quot;)</code></pre>
+<p><img src="fires_time_series_files/figure-html/aggregation%20plots-4.png" width="672" /></p>
+<pre class="r"><code>#####################################################################
+#aggregate to yearly
+#####################################################################
+fires %&gt;%
+  filter(FIRE_SIZE&gt;=100) %&gt;%
+  group_by(FIRE_YEAR) %&gt;%
+  count() %&gt;%
+  ggplot(aes(FIRE_YEAR, n)) +
+    geom_point() +
+    geom_line() +
+    ggtitle(&quot;Aggregate by Year&quot;) +
+    theme_bw() +
+    xlab(&quot;Date&quot;) +
+    ylab(&quot;Wildfires&quot;)</code></pre>
+<p><img src="fires_time_series_files/figure-html/aggregation%20plots-5.png" width="672" /></p>
+<p>The daily plot, largely dominated by zeros and a few spikes, is such a cloud of points that we probably couldn’t easily decompose it. The weekly and monthly plots are slightly more comprehensible but also displays so much apparent noise and stochasticity that we’ll probably gain little signal from it. With the seasonal and yearly plots, individual points start to come into focus and we’re able to get a sense of what the data may be doing. When working with temporally granular data that requires aggregation, it is often important to test out multiple methods of aggregation to test the robustness of your primary findings. In this instance, aggregating by season is the most justified visually (shown below) and theoretically since one would expect most wildfires to begin in summer months.</p>
+</div>
+<div id="decomposition" class="section level1">
+<h1>Decomposition</h1>
+<p>Now that I’ve decided on a metric for the time series, I’ll decompose the time series to identify underlying patterns. Time series can be decomposed in either an additive or multiplicative manner, depending on the theorized data-generating process. In this case, an additive decomposition would indicate that we don’t think there’s any interaction between the overall trend and seasonality. A multiplicative decomposition signals the opposite, there might be a trend-seasonality relationship. Since there is recent evidence of increased wildfires year-round, I’d predict that as overall trend increases, seasonality decreases and will conduct multiplicative decomposition.</p>
+<p>I’ll start by investigating the overall trend in the data. While there are plethora of packages available to decompose and visualize time series data, for this post I’ll decompose the temporal patterns by hand using <a href="https://anomaly.io/seasonal-trend-decomposition-in-r/index.html">this article</a> as a guide .</p>
+<div id="overall-trend" class="section level3">
+<h3>Overall trend</h3>
+<p>A common, simple method to detect the overall trend is to use a moving average. I first implement a lag of 4 seasons (or 12 months) since the seasonal peaks appear to occur yearly (every summer).</p>
+<pre class="r"><code>#decompose overall trend using rolling average (rollmean function)
+fires_season$fire_trend &lt;- rollmean(fires_season$n_fires, k=4, fill = &quot;NA&quot;)
+
+#ggplot-w overall trend added
+ggplot(fires_season, aes(date, n_fires)) +
+  geom_line() +
+  geom_line(aes(y=fire_trend), color=&quot;red&quot;) +
+  ggtitle(&quot;Fires by Season&quot;) +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Wildfires&quot;) +
+  theme_bw()</code></pre>
+<p><img src="fires_time_series_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>The black line with points represent the total wildfires by season as observed in the data, while the red line shows the overall trend within the data. Overall, there appears to be little relationship between number of wildfires and time. If anything, the number of wildfires appears to be decreasing over time, especially when excluding a particularly high spike in 2011.</p>
+</div>
+<div id="seasonality" class="section level3">
+<h3>Seasonality</h3>
+<pre class="r"><code>#detrend the time series
+fires_season &lt;- fires_season %&gt;%
+  mutate(fire_detrend=n_fires/fire_trend)
+
+#calculate average seasonality
+fires_season &lt;- fires_season %&gt;%
+  group_by(season) %&gt;%
+  mutate(fire_seasonality=mean(fire_detrend, na.rm = T))
+
+#ggplot
+ggplot(fires_season, aes(date, fire_seasonality)) +
+  geom_line() +
+  ggtitle(&quot;Average Seasonality&quot;) +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Seasonality&quot;) +
+  theme_bw()</code></pre>
+<p><img src="fires_time_series_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Since the overall trend was faily meager, observing strong seasonality is to be expected and is indeed observed. The plot above shows the average seasonality (mean of the de-trended data), repeated over the entire time series. The peaks represent summer months while the troughs represent winter months.</p>
+</div>
+<div id="random-noise" class="section level3">
+<h3>Random Noise</h3>
+<pre class="r"><code>#calculate random noise
+fires_season &lt;- fires_season %&gt;%
+  mutate(fire_random = n_fires/(fire_trend*fire_seasonality))
+
+#ggplot random noise
+ggplot(fires_season, aes(date, fire_random)) +
+  geom_line() +
+  ggtitle(&quot;Random noise&quot;) +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Noise&quot;) +
+  theme_bw()</code></pre>
+<p><img src="fires_time_series_files/figure-html/show%20random%20noise-1.png" width="672" /></p>
+<p>The remaining variation observed in the time series not attributed to trend or seasonality can be called random noise. When visualizing the random noise plot, we may be able to see other patterns within the time series that the initial components cannot capture. In this case, the variation in random noise appears to be distributed fairly consistently over time, indicating little remaining pattern to the time series.</p>
+</div>
+<div id="reconstruct-the-observed-data" class="section level3">
+<h3>Reconstruct the observed data</h3>
+<pre class="r"><code>#reconstruct trend and plot
+fires_season %&gt;%
+  mutate(fire_reconstruct = fire_trend * fire_seasonality * fire_random) %&gt;%
+  ggplot(aes(date, fire_reconstruct)) +
+    geom_line() +
+    geom_line(aes(date, n_fires), color=&quot;red&quot;) +
+    xlab(&quot;Date&quot;) +
+    ylab(&quot;Wildfires&quot;) +
+    theme_bw()</code></pre>
+<p><img src="fires_time_series_files/figure-html/reconstruct%20the%20trend-1.png" width="672" /></p>
+<p>To validate the decomposition, we can reconstruct the trend by multiplying together the component trends. The reconstructed trend line is plotted but not visible because the original trend (in red) lies exactly on top of it.</p>
+</div>
+</div>
+<div id="conclusion" class="section level1">
+<h1>Conclusion</h1>
+<pre class="r"><code>#plot each individually
+p0 &lt;- ggplot(fires_season, aes(date, n_fires)) +
+  geom_line() +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Observed&quot;) +
+  theme_bw()
+p1 &lt;- ggplot(fires_season, aes(date, fire_trend)) +
+  geom_line() +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Overall trend&quot;) +
+  theme_bw()
+p2 &lt;- ggplot(fires_season, aes(date, fire_seasonality)) +
+  geom_line() +  
+  ylab(&quot;Seasonality&quot;) +
+  xlab(&quot;Date&quot;) +
+  theme_bw()
+p3 &lt;- ggplot(fires_season, aes(date, fire_random)) +
+  geom_line() +
+  xlab(&quot;Date&quot;) +
+  ylab(&quot;Random noise&quot;) +
+  theme_bw()
+
+grid.arrange(p0,p1,p2,p3, ncol=1)</code></pre>
+<p><img src="fires_time_series_files/figure-html/show%20trends%20together-1.png" width="672" /></p>
+<p>Finally, I plot all trends with the observed data on top. In this analysis, I extracted temporal patterns from a time series of wild fire (&gt;100 acres burned) counts in the U.S. from 2006-2015 using a elementary, multiplicative decomposition method. There was little observable trend in the data overall, with wild fire counts potentially decreasing over time. Plots of average seasonality showed strong evidence of seasonal patterns in wild fires, with more wild fires occuring in summer months. While this analysis may be interpreted as weak evidence for wild fires decreasing over time from 2006-2015, this analysis does not address the intensity of fires over time. Future analyses should investigate the temporal patterns in the number of acres burned or destruction of human property to estimate the change in wild fire intensity as it relates to human impact.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

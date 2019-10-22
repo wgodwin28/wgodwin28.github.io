@@ -33,3 +33,7 @@
 \vspace{3em}
 
 [Wildfire Cartograms in U.S.](fires_cartogram.html)
+
+\vspace{3em}
+
+[Wildfire Time Series Decomp](fires_time_series.html)
