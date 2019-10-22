@@ -11,9 +11,6 @@ Time series data consist of a metric that's measured over regular intervals. Wit
 Here, I decompose a time series of wild fire counts into 3 parts: overall trend component, seasonal component, and a remainder component (hereafter "random noise"). I predict to see an overall trend of increasing wildfires from 2006-2015. Additionally, I expect to see a strong seasonal pattern (intially substantiated in a previous [post](ca_fires_map.html)), with the majority of wildfires starting in summer months.
 
 ```{r setup and read data, echo=F, message=F, warning=F}
-# clear memory
-rm(list=ls())
-
 #necessary libs
 library(RSQLite); library(tidyverse); library(sf); library(leaflet); library(viridis); 
 library(lubridate); library(forecast); library(zoo); library(gridExtra)

@@ -30,10 +30,6 @@ containment.
 ```{r, message=F, include=F}
 #Purpose: make map of california fires in 2015 using leaflet
 #https://medium.com/civis-analytics/making-interactive-maps-of-public-data-in-r-d360c0e13f13 based on this article
-
-# clear memory
-rm(list=ls())
-
 #necessary libs
 library(RSQLite); library(tidyverse); library(sf); library(leaflet); library(viridis)
 
