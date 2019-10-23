@@ -22,7 +22,7 @@ The goal is to build a model that predicts "impressions", or the number of peopl
 
 ```{r setup, message=F}
 #find date when data was downloaded last
-dwnld_date <- file.info("~/Desktop/google_ads/data/google-political-ads-transparency-bundle/")$atime %>% as.Date()
+dwnld_date <- file.info("~/Desktop/google_ads/data/google-political-ads-transparency-bundle/google-political-ads-geo-spend.csv")$mtime %>% as.Date()
 
 #if not downloaded in past 7 days, re-download
 if(dwnld_date < Sys.Date() - 7){

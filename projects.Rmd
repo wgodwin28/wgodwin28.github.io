@@ -20,7 +20,7 @@
 
 \vspace{3em}
 
-[RShiny visualization showing time series of spending](https://wgodwin28.shinyapps.io/shiny)
+[RShiny visualization showing time series of spending](https://wgodwin28.shinyapps.io/shiny_google_political_ads/)
 
 \vspace{3em}
 
