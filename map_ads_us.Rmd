@@ -14,7 +14,7 @@ library(scales); library(lubridate); library(kableExtra); library(sf); library(r
 
 #find date when data was downloaded last
 dwnld_date <- file.info("~/Desktop/google_ads/data/google-political-ads-transparency-bundle/")$atime %>% as.Date()
-dwnld_month <- month(dwnld_date, label = T, abbr=F)
+dwnld_month <- lubridate::month(dwnld_date, label = T, abbr=F)
 
 #if not downloaded in past 7 days, re-download
 if(dwnld_date < Sys.Date() - 7){

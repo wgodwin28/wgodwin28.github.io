@@ -318,7 +318,7 @@ $(document).ready(function () {
 <h2>Start-up</h2>
 <p>The goal is to build a model that predicts “impressions”, or the number of people the ad reached, using relevant advertisement covariates. I’ll use political advertisement spending data released by google. The dataset contains over 200,000 unique ads since June 2018 with relevant metadata including <em>number of impressions</em> as a ordinal categorical variable. Intially, I need to figure out useful predictors in the model by investigating the univariate distributions and basic bivariate relationships.</p>
 <pre class="r"><code>#find date when data was downloaded last
-dwnld_date &lt;- file.info(&quot;~/Desktop/google_ads/data/google-political-ads-transparency-bundle/&quot;)$atime %&gt;% as.Date()
+dwnld_date &lt;- file.info(&quot;~/Desktop/google_ads/data/google-political-ads-transparency-bundle/google-political-ads-geo-spend.csv&quot;)$mtime %&gt;% as.Date()
 
 #if not downloaded in past 7 days, re-download
 if(dwnld_date &lt; Sys.Date() - 7){
@@ -503,45 +503,45 @@ confusionMatrix(mtab)</code></pre>
 ## 
 ##            
 ##             Under 10k 10k-100k 100k-1M 1M-10M   10M+
-##   Under 10k    107009    11450    1420     20      0
-##   10k-100k       1613     8482    2630    163      1
-##   100k-1M           8     1435    4761   1073    121
-##   1M-10M            0        0      62    160     17
+##   Under 10k    107033    11522    1502     18      0
+##   10k-100k       1566     8380    2634    177      2
+##   100k-1M           8     1426    4749   1115    105
+##   1M-10M            0        1      57    150     34
 ##   10M+              0        0       0      0      0
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.8575          
-##                  95% CI : (0.8556, 0.8593)
-##     No Information Rate : 0.7736          
+##                Accuracy : 0.8564          
+##                  95% CI : (0.8546, 0.8583)
+##     No Information Rate : 0.7731          
 ##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
 ##                                           
-##                   Kappa : 0.5577          
+##                   Kappa : 0.5542          
 ##                                           
 ##  Mcnemar&#39;s Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: Under 10k Class: 10k-100k Class: 100k-1M
-## Sensitivity                    0.9851         0.39697        0.53657
-## Specificity                    0.5946         0.96298        0.97995
-## Pos Pred Value                 0.8925         0.65808        0.64355
-## Neg Pred Value                 0.9210         0.89897        0.96909
-## Prevalence                     0.7736         0.15216        0.06319
-## Detection Rate                 0.7620         0.06040        0.03390
-## Detection Prevalence           0.8538         0.09179        0.05268
-## Balanced Accuracy              0.7898         0.67998        0.75826
+## Sensitivity                    0.9855         0.39289        0.53109
+## Specificity                    0.5908         0.96325        0.97982
+## Pos Pred Value                 0.8914         0.65679        0.64150
+## Neg Pred Value                 0.9229         0.89861        0.96849
+## Prevalence                     0.7731         0.15183        0.06365
+## Detection Rate                 0.7619         0.05965        0.03381
+## Detection Prevalence           0.8548         0.09082        0.05270
+## Balanced Accuracy              0.7882         0.67807        0.75546
 ##                      Class: 1M-10M Class: 10M+
-## Sensitivity               0.112994   0.0000000
-## Specificity               0.999432   1.0000000
-## Pos Pred Value            0.669456         NaN
-## Neg Pred Value            0.991040   0.9990101
-## Prevalence                0.010084   0.0009899
-## Detection Rate            0.001139   0.0000000
-## Detection Prevalence      0.001702   0.0000000
-## Balanced Accuracy         0.556213   0.5000000</code></pre>
+## Sensitivity               0.102740    0.000000
+## Specificity               0.999338    1.000000
+## Pos Pred Value            0.619835         NaN
+## Neg Pred Value            0.990659    0.998996
+## Prevalence                0.010393    0.001004
+## Detection Rate            0.001068    0.000000
+## Detection Prevalence      0.001723    0.000000
+## Balanced Accuracy         0.551039    0.500000</code></pre>
 <p>The confusion matrix shows the model predictions (row-wise) stacked against the actual data (column-wise). If the model fit the data perfectly, we’d only see values along the diagonal and would see zeros everywhere else. The overall accuracy is 85%, indicating that the model correctly labels the testing data 85% of the time. Sensitivity (we’ll use “recall”) and specificity varies across the impression categories, as we’d expect. When predicting “Under 10k” impressions, a recall of 0.98 indicates that the model get 98% of the actual “Under 10k” impressions correct. The relatively poor specificity indicates that the model correctly predicts that an ad will NOT get “Under 10k” impressions 63% of the time. We see the opposite result from the “10M+” impressions category. Because we have an imbalanced classification problem with so few “10M+” impression ads, the model can predict that an ad will not get “10M+” impressions with 99.99% confidence. However, recall of 0.13 reveals that 87% of actual “10M+” impression ads are incorrectly labeled by the model.</p>
-<p>Model evaluation can be based on overall accuracy of the model or on more specific metrics like precision or recall, depending on the research question. For instance, consider that the goal of many political action committees (PAC) is to reach as many people as possible using as little money as possible. In order to figure out how to do this, they could start with looking at what covariates are conditionally associated with number of impressions from the logistic model coefficients. We can see that even controlling for ad cost, an ad with longer air time tends to achieve more impression. Going even further, they could build a model that optimizes for their main goal-accurately predicting ads with millions of impressions or recall. As we noted, the logistic model above has poor recall for impression categories of particular interest as it correctly labels a “1-10M” impression ad only 10% of the time and a “10M+” impression ad only 13% of the time. Compare this to our original “model, that simply used the cost of ad to predict impressions, which had a recall for”10M+" of 9%. Both models leave room for improvement. Let’s see if we can improve the recall at the high impression end using a tree-based models.</p>
+<p>Model evaluation can be based on overall accuracy of the model or on more specific metrics like precision or recall, depending on the research question. For instance, consider that the goal of many political action committees (PAC) is to reach as many people as possible using as little money as possible. In order to figure out how to do this, they could start with looking at what covariates are conditionally associated with number of impressions from the logistic model coefficients. We can see that even controlling for ad cost, an ad with longer air time tends to achieve more impression. Going even further, they could build a model that optimizes for their main goal-accurately predicting ads with millions of impressions or recall. As we noted, the logistic model above has poor recall for impression categories of particular interest as it correctly labels a “1-10M” impression ad only 10% of the time and a “10M+” impression ad only 13% of the time. Compare this to our original “model, that simply used the cost of ad to predict impressions, which had a recall for”10M+&quot; of 9%. Both models leave room for improvement. Let’s see if we can improve the recall at the high impression end using a tree-based models.</p>
 </div>
 <div id="random-forest" class="section level3">
 <h3>Random Forest</h3>
@@ -561,43 +561,43 @@ confusionMatrix(mtab2)</code></pre>
 ## 
 ##            
 ##             Under 10k 10k-100k 100k-1M 1M-10M   10M+
-##   Under 10k    107403    11749    1460     20      0
-##   10k-100k       1217     8048    2320    152      1
-##   100k-1M          10     1569    4989    982     74
-##   1M-10M            0        1     100    260     39
-##   10M+              0        0       4      2     25
+##   Under 10k    107412    11811    1554     18      0
+##   10k-100k       1184     7952    2263    163      2
+##   100k-1M          11     1563    5009   1014     65
+##   1M-10M            0        3     115    263     55
+##   10M+              0        0       1      2     19
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.8597          
-##                  95% CI : (0.8579, 0.8615)
-##     No Information Rate : 0.7736          
+##                Accuracy : 0.8589          
+##                  95% CI : (0.8571, 0.8607)
+##     No Information Rate : 0.7731          
 ##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
 ##                                           
-##                   Kappa : 0.5606          
+##                   Kappa : 0.5579          
 ##                                           
 ##  Mcnemar&#39;s Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: Under 10k Class: 10k-100k Class: 100k-1M
-## Sensitivity                    0.9887         0.37666        0.56227
-## Specificity                    0.5839         0.96901        0.97997
-## Pos Pred Value                 0.8903         0.68564        0.65438
-## Neg Pred Value                 0.9380         0.89650        0.97075
-## Prevalence                     0.7736         0.15216        0.06319
-## Detection Rate                 0.7648         0.05731        0.03553
-## Detection Prevalence           0.8590         0.08359        0.05429
-## Balanced Accuracy              0.7863         0.67283        0.77112
+## Sensitivity                    0.9890         0.37283        0.56017
+## Specificity                    0.5801         0.96969        0.97983
+## Pos Pred Value                 0.8892         0.68765        0.65375
+## Neg Pred Value                 0.9393         0.89623        0.97039
+## Prevalence                     0.7731         0.15183        0.06365
+## Detection Rate                 0.7646         0.05661        0.03566
+## Detection Prevalence           0.8599         0.08232        0.05454
+## Balanced Accuracy              0.7845         0.67126        0.77000
 ##                      Class: 1M-10M Class: 10M+
-## Sensitivity               0.183616   0.1798561
-## Specificity               0.998993   0.9999572
-## Pos Pred Value            0.650000   0.8064516
-## Neg Pred Value            0.991744   0.9991880
-## Prevalence                0.010084   0.0009899
-## Detection Rate            0.001852   0.0001780
-## Detection Prevalence      0.002848   0.0002208
-## Balanced Accuracy         0.591304   0.5899067</code></pre>
+## Sensitivity               0.180137   0.1347518
+## Specificity               0.998756   0.9999786
+## Pos Pred Value            0.603211   0.8636364
+## Neg Pred Value            0.991453   0.9991314
+## Prevalence                0.010393   0.0010037
+## Detection Rate            0.001872   0.0001353
+## Detection Prevalence      0.003104   0.0001566
+## Balanced Accuracy         0.589446   0.5673652</code></pre>
 <p>Compared to multinomial logistic regression, random forest does perform better for lower frequency classes like “1-10M” and “10M+”. Despite doubling the recall observed in logistic regression, a model that correctly labels an ad to get “10M+” impressions only 30% of the time leaves a lot to be desired. Outside of the scope of this analysis but in an effort to improve recall, we could oversample the minority impression categories. This has the effect of balancing out the distribution of impressions and would likely improve prediction in minority categories. The overall accuracy of the random forest model is similar to the logisitic regression at 85%, indicating that the gains made in recall for high impression classes may have come at cost for other components of model performance.</p>
 </div>
 <div id="boosted-c5.0" class="section level3">
@@ -615,43 +615,43 @@ confusionMatrix(mtab3)</code></pre>
 ## 
 ##            
 ##             Under 10k 10k-100k 100k-1M 1M-10M   10M+
-##   Under 10k    107180    11458    1421     20      0
-##   10k-100k       1291     6026     724     18      1
-##   100k-1M         159     3883    6728   1378    138
+##   Under 10k    104979     9831    1355     14      0
+##   10k-100k       3601     9178    1982    127      2
+##   100k-1M          27     2320    5605   1319    139
 ##   1M-10M            0        0       0      0      0
 ##   10M+              0        0       0      0      0
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.8541          
-##                  95% CI : (0.8522, 0.8559)
-##     No Information Rate : 0.7736          
+##                Accuracy : 0.8525          
+##                  95% CI : (0.8507, 0.8544)
+##     No Information Rate : 0.7731          
 ##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
 ##                                           
-##                   Kappa : 0.55            
+##                   Kappa : 0.5666          
 ##                                           
 ##  Mcnemar&#39;s Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: Under 10k Class: 10k-100k Class: 100k-1M
-## Sensitivity                    0.9867         0.28202        0.75826
-## Specificity                    0.5943         0.98292        0.95775
-## Pos Pred Value                 0.8926         0.74764        0.54762
-## Neg Pred Value                 0.9287         0.88410        0.98326
-## Prevalence                     0.7736         0.15216        0.06319
-## Detection Rate                 0.7633         0.04291        0.04791
-## Detection Prevalence           0.8551         0.05740        0.08749
-## Balanced Accuracy              0.7905         0.63247        0.85800
+## Sensitivity                    0.9666         0.43031        0.62682
+## Specificity                    0.6486         0.95206        0.97107
+## Pos Pred Value                 0.9036         0.61639        0.59564
+## Neg Pred Value                 0.8507         0.90325        0.97454
+## Prevalence                     0.7731         0.15183        0.06365
+## Detection Rate                 0.7473         0.06533        0.03990
+## Detection Prevalence           0.8270         0.10599        0.06699
+## Balanced Accuracy              0.8076         0.69118        0.79895
 ##                      Class: 1M-10M Class: 10M+
-## Sensitivity                0.00000   0.0000000
-## Specificity                1.00000   1.0000000
+## Sensitivity                0.00000    0.000000
+## Specificity                1.00000    1.000000
 ## Pos Pred Value                 NaN         NaN
-## Neg Pred Value             0.98992   0.9990101
-## Prevalence                 0.01008   0.0009899
-## Detection Rate             0.00000   0.0000000
-## Detection Prevalence       0.00000   0.0000000
-## Balanced Accuracy          0.50000   0.5000000</code></pre>
+## Neg Pred Value             0.98961    0.998996
+## Prevalence                 0.01039    0.001004
+## Detection Rate             0.00000    0.000000
+## Detection Prevalence       0.00000    0.000000
+## Balanced Accuracy          0.50000    0.500000</code></pre>
 <p>A Boosted C5.0 model is based on simple tree-based framework that uses “boosting” methods. While a random forest splits the predictor space on into partitions that minimize impurity/maximize information criterion for each independent tree, boosting models grow trees sequentially with the residuals of the previous tree becoming the response variable of the subsequent tree. While this smoothing over residuals may sometimes improve model performance, in this context, the random forest performed slightly better overall.</p>
 <p>There are a variety of other models one could use to classify impressions from naive Bayes to support vector machines, which could lead to improved overall accuracy and improved recall. There’s also feature engineering that we didn’t investigate at length (like lagged variables or midterm-related associations). Those pursuits are fodder for future projects. The takeaway from this analysis is that logistic regression, while some times not as accurate, still can construct a useful springboard for further analyses due to its interpretability. And regression trees-random forests and boosting methods-can be fast, flexible frameworks for optimizing toward a specific performance metric.</p>
 </div>
