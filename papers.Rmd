@@ -9,7 +9,7 @@ output:
 
 ## University of Washington
 
-My Masters thesis investigated the interactive effects of air pollution and ambient temperature on mortality in Mexico City. Full text provided upon request.
+My Masters thesis investigated the interactive effects of air pollution and ambient temperature on mortality in Mexico City using generalized additive models. Full text provided upon request.
 
 \vspace{4em}
 
