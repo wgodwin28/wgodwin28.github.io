@@ -319,7 +319,7 @@ $(document).ready(function () {
 <h2>Intro</h2>
 <p>I currently work on a team that frequently relies on permutation tests to test the robustness of the analysis at hand, especially when analyzing data from randomized-controlled trials. The basic idea is to randomly re-allocate the treatment assignment across all observations. This re-allocation is usually repeated 1,000 or 10,000 times to acheive a distribution of the data under the null hypothesis that there is no difference between the groups. They are very flexible to the type of analysis, whether it’s logistic, negaitve binomial, poisson, or otherwise. Below, I test out a homemade permuation test on simulated data.</p>
 <pre class="r"><code>#load ggplot
-library(ggplot2)
+library(ggplot2); library(purrr)
 
 #set seed for reproducibility
 set.seed(2^5)
@@ -346,12 +346,12 @@ mean_diff &lt;- round(mean(pierre) - mean(thad))</code></pre>
 permute_fxn &lt;- function(i){
   rows &lt;- rnorm(1000)&gt;0
   p_permute &lt;- c(pierre[!rows], thad[rows])
-  t_permute &lt;- c(thad[!rows], pierre[rows])
+  t_permute &lt;- c(pierre[rows], thad[!rows])
   mean(p_permute) - mean(t_permute)
 }
 
-#run permutation fxn to generate mean difference distribution
-diff_permute &lt;- sapply(1:1000, permute_fxn)</code></pre>
+#run permutation fxn to generate mean difference distribution-trying out Hadley&#39;s &quot;map&quot; syntax
+diff_permute &lt;- map_dbl(1:1000, permute_fxn)</code></pre>
 <p>Here I conduct the re-allocation of the grouping variable which, in this case, is the rider identity. The permutation function may be a bit unconventional but legitimately shuffles rider identity by combining a random index of rows from each rider’s power distribution. Then I compute the mean difference and add it to a growing vector. The subsequent vector is the distribution of mean difference in power output across 1000 permutations under the null hypothesis.</p>
 </div>
 <div id="permutation-results" class="section level2">

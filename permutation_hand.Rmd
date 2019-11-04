@@ -9,7 +9,7 @@ I currently work on a team that frequently relies on permutation tests to test t
 
 ```{r setup}
 #load ggplot
-library(ggplot2)
+library(ggplot2); library(purrr)
 
 #set seed for reproducibility
 set.seed(2^5)
@@ -40,12 +40,12 @@ Plotting the histograms, we can see substantial overlap in power between the two
 permute_fxn <- function(i){
   rows <- rnorm(1000)>0
   p_permute <- c(pierre[!rows], thad[rows])
-  t_permute <- c(thad[!rows], pierre[rows])
+  t_permute <- c(pierre[rows], thad[!rows])
   mean(p_permute) - mean(t_permute)
 }
 
-#run permutation fxn to generate mean difference distribution
-diff_permute <- sapply(1:1000, permute_fxn)
+#run permutation fxn to generate mean difference distribution-trying out Hadley's "map" syntax
+diff_permute <- map_dbl(1:1000, permute_fxn)
 ```
 
 Here I conduct the re-allocation of the grouping variable which, in this case, is the rider identity. The permutation function may be a bit unconventional but legitimately shuffles rider identity by combining a random index of rows from each rider's power distribution. Then I compute the mean difference and add it to a growing vector. The subsequent vector is the distribution of mean difference in power output across 1000 permutations under the null hypothesis.
