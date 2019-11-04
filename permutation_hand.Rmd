@@ -1,0 +1,68 @@
+---
+title: "Homemade Permutation Test"
+author: "Will Godwin"
+output: html_document
+---
+
+## Intro
+I currently work on a team that frequently relies on permutation tests to test the robustness of the analysis at hand, especially when analyzing data from randomized-controlled trials. The basic idea is to randomly re-allocate the treatment assignment across all observations. This re-allocation is usually repeated 1,000 or 10,000 times to acheive a distribution of the data under the null hypothesis that there is no difference between the groups. They are very flexible to the type of analysis, whether it's logistic, negaitve binomial, poisson, or otherwise. Below, I test out a homemade permuation test on simulated data.
+
+```{r setup}
+#load ggplot
+library(ggplot2)
+
+#set seed for reproducibility
+set.seed(2^5)
+
+#create fake cycling power data
+pierre <- rnorm(1000, 360, sd=90)
+thad <- rnorm(1000, 340, sd=70)
+```
+
+## Create and plot the data
+Above I created the data from normal distributions, based on some theorized cycling power outputs in watts from two different cyclists. I want to find out if the power distributions of the two riders are significantly different; ie is one rider stronger than the other?
+
+```{r, message=F}
+#plot the histgrams
+df <- data.frame(power=c(pierre, thad), rider=c(rep("pierre", 1000), rep("thad", 1000)))
+ggplot(df, aes(power, fill=rider)) +
+  geom_histogram(alpha = 0.4, position="identity")
+
+#observed mean difference
+mean_diff <- round(mean(pierre) - mean(thad))
+```
+
+Plotting the histograms, we can see substantial overlap in power between the two riders. Thad appears to be a little more consistent with a narrower distribution however Pierre has a higher average wattage by `r mean_diff` watts. Let's see if the difference is significant according to permutation test.
+
+## Run permutation function
+```{r}
+#function to permute and find mean difference
+permute_fxn <- function(i){
+  rows <- rnorm(1000)>0
+  p_permute <- c(pierre[!rows], thad[rows])
+  t_permute <- c(thad[!rows], pierre[rows])
+  mean(p_permute) - mean(t_permute)
+}
+
+#run permutation fxn to generate mean difference distribution
+diff_permute <- sapply(1:1000, permute_fxn)
+```
+
+Here I conduct the re-allocation of the grouping variable which, in this case, is the rider identity. The permutation function may be a bit unconventional but legitimately shuffles rider identity by combining a random index of rows from each rider's power distribution. Then I compute the mean difference and add it to a growing vector. The subsequent vector is the distribution of mean difference in power output across 1000 permutations under the null hypothesis.
+
+## Permutation results
+```{r, message=F}
+#plot the distribution of mean difference
+df_permute <- data.frame(permute=diff_permute)
+ggplot(df_permute, aes(permute)) +
+  geom_histogram() +
+  xlab("Mean difference (watts) across 1000 permutations")
+
+#mean difference 95%
+diff_range <- round(quantile(diff_permute, probs = c(0.025, 0.975)), 1)
+```
+
+The plot of the mean difference across 1000 permutations shows that under the null hypothesis, the mean difference appears to mean centered around 0, which is what we'd expect. The middle 95% of distribution covers `r diff_range[1]` watts to `r diff_range[2]` watts, which does not include the observed wattage difference of `r mean_diff` and indicates that the two riders do have significantly different power outputs at the alpha 0.05 level.
+
+## Concluding remarks
+Here I conducted permutation test, commonly used in epidemiology and econometrics, to test whether simulated data of two cyclists power outputs were significantly different. I found that, according to permutation test using alpha level of 0.05, the two riders do have significantly different average power outputs.

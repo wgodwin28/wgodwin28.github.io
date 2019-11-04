@@ -10,9 +10,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Will Godwin" />
 
 
-<title>projects.utf8.md</title>
+<title>Homemade Permutation Test</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -308,44 +309,66 @@ $(document).ready(function () {
 
 
 
+<h1 class="title toc-ignore">Homemade Permutation Test</h1>
+<h4 class="author">Will Godwin</h4>
 
 </div>
 
 
-<hr />
-<hr />
-<p><link rel="stylesheet" href="styles.css" type="text/css"></p>
-<div id="political-ad-spending-on-google-platforms" class="section level2">
-<h2>Political Ad Spending on Google Platforms</h2>
+<div id="intro" class="section level2">
+<h2>Intro</h2>
+<p>I currently work on a team that frequently relies on permutation tests to test the robustness of the analysis at hand, especially when analyzing data from randomized-controlled trials. The basic idea is to randomly re-allocate the treatment assignment across all observations. This re-allocation is usually repeated 1,000 or 10,000 times to acheive a distribution of the data under the null hypothesis that there is no difference between the groups. They are very flexible to the type of analysis, whether it’s logistic, negaitve binomial, poisson, or otherwise. Below, I test out a homemade permuation test on simulated data.</p>
+<pre class="r"><code>#load ggplot
+library(ggplot2)
 
-<p><a href="map_ads_us.html">Geographic Distribution Part 1-U.S level</a></p>
+#set seed for reproducibility
+set.seed(2^5)
 
-<p><a href="map_ads_state.html">Geographic Distribution Part 2-State level</a></p>
-
-<p><a href="impressions_model.html">Modeling Impressions (Ad views)</a></p>
-
-<p><a href="https://wgodwin28.shinyapps.io/shiny_google_political_ads/">RShiny visualization showing time series of spending</a></p>
-
-<p><img src="images/trump.jpg" style="width:30%; border:10px solid; margin-right: 20px" align="left"></p>
-<p><img src="images/warren.jpg" style="width:30%; border:10px solid; margin-left: 20px" align="center"></p>
-
-<p><span class="math inline">\(~\)</span></p>
+#create fake cycling power data
+pierre &lt;- rnorm(1000, 360, sd=90)
+thad &lt;- rnorm(1000, 340, sd=70)</code></pre>
 </div>
-<div id="united-states-wildfires-1992-2015" class="section level2">
-<h2>United States Wildfires 1992-2015</h2>
-
-<p><a href="ca_fires_map.html">Mapping the Most Destructive California Wildfires of 2015</a></p>
-
-<p><a href="fires_cartogram.html">Wildfire Cartograms in U.S.</a></p>
-
-<p><a href="fires_time_series.html">Wildfire Time Series Decomp</a></p>
-<p><img src="images/calif-wildfire.jpg" style="width:80%; border:10px solid; margin-right: 20px" align="center"></p>
-<p>credit: National Geographic</p>
-<p><span class="math inline">\(~\)</span></p>
+<div id="create-and-plot-the-data" class="section level2">
+<h2>Create and plot the data</h2>
+<p>Above I created the data from normal distributions, based on some theorized cycling power outputs in watts from two different cyclists. I want to find out if the power distributions of the two riders are significantly different; ie is one rider stronger than the other?</p>
+<pre class="r"><code>#plot the histgrams
+df &lt;- data.frame(power=c(pierre, thad), rider=c(rep(&quot;pierre&quot;, 1000), rep(&quot;thad&quot;, 1000)))
+ggplot(df, aes(power, fill=rider)) +
+  geom_histogram(alpha = 0.4, position=&quot;identity&quot;)</code></pre>
+<p><img src="permutation_hand_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<pre class="r"><code>#observed mean difference
+mean_diff &lt;- round(mean(pierre) - mean(thad))</code></pre>
+<p>Plotting the histograms, we can see substantial overlap in power between the two riders. Thad appears to be a little more consistent with a narrower distribution however Pierre has a higher average wattage by 24 watts. Let’s see if the difference is significant according to permutation test.</p>
 </div>
-<div id="miscellaneous" class="section level2">
-<h2>Miscellaneous</h2>
-<p><a href="permutation_hand.html">Homemade Permutation Test on Simulated Cycling Data</a></p>
+<div id="run-permutation-function" class="section level2">
+<h2>Run permutation function</h2>
+<pre class="r"><code>#function to permute and find mean difference
+permute_fxn &lt;- function(i){
+  rows &lt;- rnorm(1000)&gt;0
+  p_permute &lt;- c(pierre[!rows], thad[rows])
+  t_permute &lt;- c(thad[!rows], pierre[rows])
+  mean(p_permute) - mean(t_permute)
+}
+
+#run permutation fxn to generate mean difference distribution
+diff_permute &lt;- sapply(1:1000, permute_fxn)</code></pre>
+<p>Here I conduct the re-allocation of the grouping variable which, in this case, is the rider identity. The permutation function may be a bit unconventional but legitimately shuffles rider identity by combining a random index of rows from each rider’s power distribution. Then I compute the mean difference and add it to a growing vector. The subsequent vector is the distribution of mean difference in power output across 1000 permutations under the null hypothesis.</p>
+</div>
+<div id="permutation-results" class="section level2">
+<h2>Permutation results</h2>
+<pre class="r"><code>#plot the distribution of mean difference
+df_permute &lt;- data.frame(permute=diff_permute)
+ggplot(df_permute, aes(permute)) +
+  geom_histogram() +
+  xlab(&quot;Mean difference (watts) across 1000 permutations&quot;)</code></pre>
+<p><img src="permutation_hand_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>#mean difference 95%
+diff_range &lt;- round(quantile(diff_permute, probs = c(0.025, 0.975)), 1)</code></pre>
+<p>The plot of the mean difference across 1000 permutations shows that under the null hypothesis, the mean difference appears to mean centered around 0, which is what we’d expect. The middle 95% of distribution covers -7 watts to 7.6 watts, which does not include the observed wattage difference of 24 and indicates that the two riders do have significantly different power outputs at the alpha 0.05 level.</p>
+</div>
+<div id="concluding-remarks" class="section level2">
+<h2>Concluding remarks</h2>
+<p>Here I conducted permutation test, commonly used in epidemiology and econometrics, to test whether simulated data of two cyclists power outputs were significantly different. I found that, according to permutation test using alpha level of 0.05, the two riders do have significantly different average power outputs.</p>
 </div>
 
 
