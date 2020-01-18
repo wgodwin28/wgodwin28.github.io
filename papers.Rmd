@@ -1,11 +1,11 @@
 ---
+author: "Will Godwin"
 output:
-  html_document: 
-    toc: true
-    toc_float: true
+  epuRate::epurate:
+    toc: TRUE
+    number_sections: FALSE
+    code_folding: "hide"
 ---
-
-<link rel="stylesheet" href="styles.css" type="text/css">
 
 ## University of Washington
 

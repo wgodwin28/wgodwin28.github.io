@@ -3,8 +3,10 @@ title: "Geographic Distribution of Political Spending in U.S. (2018-2019) Part 1
 author: "Will Godwin"
 date: "8/8/2019"
 output:
-  pdf_document: default
-  html_document: default
+  epuRate::epurate:
+    toc: TRUE
+    number_sections: FALSE
+    code_folding: "hide"
 ---
 
 ```{r, include=F, echo=F}
@@ -17,22 +19,22 @@ dwnld_date <- file.info("~/Desktop/google_ads/data/google-political-ads-transpar
 dwnld_month <- lubridate::month(dwnld_date, label = T, abbr=F)
 
 #if not downloaded in past 7 days, re-download
-if(dwnld_date < Sys.Date() - 7){
-  #set url and file destination
-  url <- "https://storage.googleapis.com/transparencyreport/google-political-ads-transparency-bundle.zip"
-  dest <- "~/Desktop/google_ads/data/google_ads.zip"
-  unzip_dir <- "~/Desktop/google_ads/data"
-  
-  #download ads data and save to central location
-  download.file(url=url, destfile = dest, method = "curl")
-  unzip(dest, exdir = unzip_dir)
-}
+# if(dwnld_date < Sys.Date() - 7){
+#   #set url and file destination
+#   url <- "https://storage.googleapis.com/transparencyreport/google-political-ads-transparency-bundle.zip"
+#   dest <- "~/Desktop/google_ads/data/google_ads.zip"
+#   unzip_dir <- "~/Desktop/google_ads/data"
+#   
+#   #download ads data and save to central location
+#   download.file(url=url, destfile = dest, method = "curl")
+#   unzip(dest, exdir = unzip_dir)
+# }
 ```
 
 
 ```{r setup, include=F}
 #read in shapefile of US states
-shape <- st_read("~/Desktop/google_ads/data/states_21basic/states.shp")
+shape <- st_read("~/Desktop/website_dev/google_ads/data/states_21basic/states.shp")
 s_pop <- as.data.table(shape)[,.(STATE_NAME, STATE_ABBR)]
 #from here: https://www.arcgis.com/home/item.html?id=f7f805eb65eb4ab787a0a3e1116ca7e5
 
@@ -44,7 +46,7 @@ shape <- shape %>%
   dplyr::select(state_var, STATE_NAME)
 
 #read in data
-dt <- fread("~/Desktop/google_ads/data/google-political-ads-transparency-bundle/google-political-ads-geo-spend.csv")
+dt <- fread("~/Desktop/website_dev//google_ads/data/google-political-ads-transparency-bundle/google-political-ads-geo-spend.csv")
 
 #sum spending over state
 dt <- dt %>%
@@ -58,27 +60,32 @@ dt <- dt %>%
 shape.data <- inner_join(shape, dt, by="state_var") %>%
   dplyr::select(spending, state_var, STATE_NAME)
 ```
-# Intro
+
+## Intro
 Money diverted to political advertising has become a multi-million dollar business as technology has brought us high-speed internet and political organizations are able to form super PACs. Understanding where in the U.S. this money is focused can provide insight into what populations and regions of the country political candidates want to target. Google, to its credit, releases spending on political ads for its platform in a easily accessible manner, which makes this investigation much easier. Here I show U.S, state-level maps of spending on political ads since June 2018.
 
+<br>
+
+## Data Prep
 After downloading the data and performing some rudimentary cleaning, the data are ready to map. You can find all the code I used for this analysis on my [github](http://github.com/wgodwin28/wgodwin28.github.io). The first map below shows absolute spending from June 2018-`r dwnld_month` 2019. Clearly, California and Florida stand out as the top recipients of political ad dollars. However, there are some surprising states near the top as well, with Texas, Arizona, Missouri, and Tennessee all receiving more that 4 million dollars since June 2018.
 
-\vspace{3em}
+<br>
 
-```{r plot, echo=F}
+## U.S. Map
+```{r plot}
 #Make map
 ggplot() + 
   geom_sf(data=shape.data, aes(fill=spending), color="gray30") +
   scale_fill_viridis_c(labels=comma, name="USD") +
-  ggtitle(paste0("Spending June 2018 to ", dwnld_month, " 2019"))
+  ggtitle(paste0("Spending June 2018 to December 2019"))
 ```
 
 However, this trend could be confounded by population. In order to get a perspective on how much any one person may encounter a google political ad by state, the map needs to be population-weighted. The map below shows spending after population adjustment. With spending over $1000 per 1000 people, Montana, North Dakota, and Nevada take the top spots-a result not too surprising considering these states have some of the smallest populations. Notably, this map reveals that Tennessee, Missouri, and Arizona rank high not only in absolute spending but in relative spending.
 
-```{r, echo=F, warning=F}
+```{r, warning=F}
 #read in 2018 population data
 #dowloaded here: https://www2.census.gov/programs-surveys/popest/datasets/2010-2018/state/asrh/
-pop <- fread("~/Desktop/google_ads/data/us_pop.csv")[,.(NAME, POPESTIMATE2018, POPEST18PLUS2018)]
+pop <- fread("~/Desktop/website_dev/google_ads/data/us_pop.csv")[,.(NAME, POPESTIMATE2018, POPEST18PLUS2018)]
 shape.data <- left_join(shape.data, pop, by=c("STATE_NAME"="NAME"))
 
 #calculate pop-weighted spending
@@ -89,7 +96,7 @@ shape.data <- shape.data %>%
 ggplot() + 
   geom_sf(data=shape.data, aes(fill=pop_spending), color="gray30") +
   scale_fill_viridis_c(labels=comma, name="USD/1000 people") +
-  ggtitle(paste0("Pop-weighted spending June 2018 to ", dwnld_month, " 2019"))
+  ggtitle(paste0("Pop-weighted spending June 2018 to December 2019"))
 
 ```
 

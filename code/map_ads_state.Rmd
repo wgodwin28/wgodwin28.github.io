@@ -2,7 +2,11 @@
 title: "Geographic Distribution of Political Spending in U.S. (2018-2019) Part 2"
 author: "Will Godwin"
 date: "8/26/2019"
-output: html_document
+output:
+  epuRate::epurate:
+    toc: TRUE
+    number_sections: FALSE
+    code_folding: "hide"
 ---
 
 ```{r, include=F, echo=F}
@@ -18,22 +22,22 @@ dwnld_date <- file.info("~/Desktop/google_ads/data/google-political-ads-transpar
 dwnld_month <- lubridate::month(dwnld_date, label = T, abbr=F)
 
 #if not downloaded in past 7 days, re-download
-if(dwnld_date < Sys.Date() - 7){
-  #set url and file destination
-  url <- "https://storage.googleapis.com/transparencyreport/google-political-ads-transparency-bundle.zip"
-  dest <- "~/Desktop/google_ads/data/google_ads.zip"
-  unzip_dir <- "~/Desktop/google_ads/data"
-  
-  #download ads data and save to central location
-  download.file(url=url, destfile = dest, method = "curl")
-  unzip(dest, exdir = unzip_dir)
-}
+# if(dwnld_date < Sys.Date() - 7){
+#   #set url and file destination
+#   url <- "https://storage.googleapis.com/transparencyreport/google-political-ads-transparency-bundle.zip"
+#   dest <- "~/Desktop/google_ads/data/google_ads.zip"
+#   unzip_dir <- "~/Desktop/google_ads/data"
+#   
+#   #download ads data and save to central location
+#   download.file(url=url, destfile = dest, method = "curl")
+#   unzip(dest, exdir = unzip_dir)
+# }
 ```
 
-```{r, echo=F, warning=F}
+```{r, warning=F}
 #shapefile of congressional districts
 #source: http://cdmaps.polisci.ucla.edu/
-shape <- read_sf("~/Desktop/google_ads/data/districtShapes/districts114.shp")
+shape <- read_sf("~/Desktop/website_dev/google_ads/data/districtShapes/districts114.shp")
 
 #state postal codes
 states <- cbind(state_abr=state.abb, STATENAME=state.name) %>% as.data.frame()
@@ -47,7 +51,7 @@ shape <- shape %>%
   dplyr::select(cong_dis, state_abr)
 
 #read in ad data
-dt <- fread("~/Desktop/google_ads/data/google-political-ads-transparency-bundle/google-political-ads-geo-spend.csv")
+dt <- fread("~/Desktop/website_dev/google_ads/data/google-political-ads-transparency-bundle/google-political-ads-geo-spend.csv")
 
 #sum spending over state
 dt <- dt %>%
@@ -64,99 +68,91 @@ shape.data <- inner_join(shape, dt, by="cong_dis") %>%
   dplyr::select(spending, state, cong_dis)
 ```
 
-```{r plot, echo=F}
-#Make map
-# ggplot() + 
-#   geom_sf(data=shape.data, aes(fill=spending), color="gray30") +
-#   scale_fill_viridis_c(labels=comma, name="USD") +
-#   ggtitle("Spending June 2018 to August 2019")
-```
-
 I mapped the congressional districts for the top 5 states in terms of ad dollars spent since June 2018, with each state totaling more the 5 million dollars. Those states were, in descending order of ad dollars spent, Florida (total of 10.7 million), California (9.1 M), Texas (5.6 M), Tennessee (5.1 M), and Arizona (5.0 M). And of course I had to include my dear home state of Georgia (1.9 M). These maps provide insight into the geographic distribution of ad spending within these political-ad bombarded states.
 
 
-```{r florida map, echo=F}
+```{r florida map}
 #subset and plot
 shape.data %>%
   filter(state=="FL") %>%
   ggplot() + 
     geom_sf(aes(fill=spending), color="gray30") +
     scale_fill_viridis_c(labels=comma, name="USD") +
-    ggtitle(paste0("Florida - June 2018 to ", dwnld_month, " 2019"))
+    ggtitle(paste0("Florida - June 2018 to December 2019"))
 ```
 
 Districts with the greatest spending-in excess of $800,000-include Florida's 10th and 27th districts. For context, spending in these districts is greater than total spending in 21 states. Florida's 10th district includes the city of Orlando and surrounding westward counties, while Florida's 27th district contains a large part of the city of Miami and southern Miami-Dade county.
 
-\vspace{3em}
+<br>
 
-```{r cali map, echo=F}
+```{r cali map}
 #subset and plot
 shape.data %>%
   filter(state=="CA") %>%
   ggplot() + 
     geom_sf(aes(fill=spending), color="gray30") +
     scale_fill_viridis_c(labels=comma, name="USD") +
-    ggtitle(paste0("California - June 2018 to ", dwnld_month, " 2019"))
+    ggtitle(paste0("California - June 2018 to December 2019"))
 ```
 
 Districts receiving the most dollars in political ads in California include the 10th, 25th, 39th, 45th, and 48th. All of these districts border or are within the largely blue Los Angeles Metropolitan Area with the exception of the 10th district, which includes more moderate areas of Modesto and San Joaquin County.
 
-\vspace{3em}
+<br>
 
-```{r texas map, echo=F}
+```{r texas map}
 #subset and plot
 shape.data %>%
   filter(state=="TX") %>%
   ggplot() + 
     geom_sf(aes(fill=spending), color="gray30") +
     scale_fill_viridis_c(labels=comma, name="USD") +
-    ggtitle(paste0("Texas - June 2018 to ", dwnld_month, " 2019"))
+    ggtitle(paste0("Texas - June 2018 to December 2019"))
 ```
 
 Political ad spending in Texas congregates around its two most populous metropolitan areas: Houston-The Woodlands and Dallas-Fort Worth. While the northern panhandle of Texas receives relatively few ad dollars, the districts south of Dallas-Forth Worth and west of Houston have received $200,000-400,000 in the past 14 months.
 
-\vspace{3em}
+<br>
 
-```{r tennessee map, echo=F}
+```{r tennessee map}
 #subset
 shape.data %>%
   filter(state=="TN") %>%
   ggplot() + 
     geom_sf(aes(fill=spending), color="gray30") +
     scale_fill_viridis_c(labels=comma, name="USD") +
-    ggtitle(paste0("Tennessee - June 2018 to ", dwnld_month, " 2019"))
+    ggtitle(paste0("Tennessee - June 2018 to December 2019"))
 ```
 
 The geographical epicenter of political ad dollars in Tennessee is pretty clear: the largely liberal 5th congressional district, which includes the city of Nashville. Notably, this district has received $1.1 M, almost double the total ad dollars that the 9th district, the second-highest, received.
 
-\vspace{3em}
+<br>
 
-```{r arizona map, echo=F}
+```{r arizona map}
 #subset and plot
 shape.data %>%
   filter(state=="AZ") %>%
   ggplot() + 
     geom_sf(aes(fill=spending), color="gray30") +
     scale_fill_viridis_c(labels=comma, name="USD") +
-    ggtitle(paste0("Arizona - June 2018 to ", dwnld_month, " 2019"))
+    ggtitle(paste0("Arizona - June 2018 to December 2019"))
 ```
 
 In a landlocked state with very little population near its borders, Arizona's 7th district lights up the map with over a million ad dollars spent. This district is Democrat-controlled and includes much of inner Phoenix and the eastern portion of Glendale.
 
-\vspace{3em}
+<br>
 
-```{r georgia map, echo=F}
+```{r georgia map}
 #subset
 shape.data %>%
   filter(state=="GA") %>%
   ggplot() + 
     geom_sf(aes(fill=spending), color="gray30") +
     scale_fill_viridis_c(labels=comma, name="USD") +
-    ggtitle(paste0("Georgia - June 2018 to ", dwnld_month, " 2019"))
+    ggtitle(paste0("Georgia - June 2018 to December 2019"))
 ```
 
 The map of political ad spending across Georgia's congressional districts appears to support the trend observed above-that urban and suburban areas receive the lion-share of ad dollars. Georgia's 6th district has received the most funding for ads across the state. This finding makes sense given that the district flipped from a long-held Republican control to moderate Democrat control in the 2018 midterm and will likely be viewed as a site for critical swing voters in the 2020 election.
 
-\vspace{2em}
+<br>
 
-This post highlights the primary geographical targets of political ad spending. My subsequent posts (and [Rshiny](https://wgodwin28.shinyapps.io/shiny)) will investigate time trends and identify the primary actors and funders behind the spending.
+This post highlights the primary geographical targets of political ad spending. My subsequent posts (and [Rshiny](https://wgodwin28.shinyapps.io/shiny_google_political_ads/)) will investigate time trends and identify the primary actors and funders behind the spending.

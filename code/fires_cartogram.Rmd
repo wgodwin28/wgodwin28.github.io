@@ -2,7 +2,11 @@
 title: "Cartograms of Wildfires"
 author: "Will Godwin"
 date: "10/17/2019"
-output: html_document
+output:
+  epuRate::epurate:
+    toc: TRUE
+    number_sections: FALSE
+    code_folding: "hide"
 ---
 
 Cartograms can be a useful tool to illustrate relative differences across space within a map. Here I combine animate cartograms, using the *cartogram* and *gganimate* packages, to show state-level trends over time. To get access to these data, refer to my [previous post](ca_fires_map.html) that includes a link to the data

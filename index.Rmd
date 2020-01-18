@@ -1,5 +1,9 @@
 ---
-
+author: "Will Godwin"
+output:
+  epuRate::epurate:
+    toc: TRUE
+    number_sections: FALSE
 ---
 
 <img src="images/portrait_pic.png" style="width:25%; border:10px solid; margin-right: 20px" align="left">

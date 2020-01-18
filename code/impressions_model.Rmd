@@ -1,7 +1,11 @@
 ---
 title: "Predicting Impressions"
 date: "9/2/2019"
-output: html_document
+output:
+  epuRate::epurate:
+    toc: TRUE
+    number_sections: FALSE
+    code_folding: "hide"
 ---
 
 ## Start-up
@@ -25,7 +29,7 @@ The goal is to build a model that predicts "impressions", or the number of peopl
 dwnld_date <- file.info("~/Desktop/google_ads/data/google-political-ads-transparency-bundle/google-political-ads-geo-spend.csv")$mtime %>% as.Date()
 
 #if not downloaded in past 7 days, re-download
-if(dwnld_date < Sys.Date() - 7){
+if(F){ #dwnld_date < Sys.Date() - 7){
   #set url and file destination
   url <- "https://storage.googleapis.com/transparencyreport/google-political-ads-transparency-bundle.zip"
   dest <- "~/Desktop/google_ads/data/google_ads.zip"
@@ -37,7 +41,7 @@ if(dwnld_date < Sys.Date() - 7){
 }
 
 #read in data
-dt <- read_csv("~/Desktop/google_ads/data/google-political-ads-transparency-bundle/google-political-ads-creative-stats.csv")
+dt <- read_csv("~/Desktop/website_dev/google_ads/data/google-political-ads-transparency-bundle/google-political-ads-creative-stats.csv")
 
 #relevant variables
 vars_keep <- c("Ad_Type", "Regions", "Advertiser_ID", "Date_Range_Start", "Date_Range_End", 
@@ -228,14 +232,14 @@ Model evaluation can be based on overall accuracy of the model or on more specif
 #Build the model
 if(!file.exists("model_output/impress_rf.rds")){ 
   model2 <- randomForest(mod.formula, data = dt.train)
-  saveRDS(model1, "model_output/impress_rf.rds")
-}else model1 <- readRDS("model_output/impress_rf.rds")
+  saveRDS(model2, "model_output/impress_rf.rds")
+}else model2 <- readRDS("model_output/impress_rf.rds")
 
 #Summarize the model
 #summary(model2)
 
 #Predict using the model
-dt.test$pred_randomforest <- predict(model2, x.test)
+dt.test$pred_randomforest <- predict(model2, x.test, type="response")
 
 #Accuracy of the model
 mtab2 <- table(dt.test$pred_randomforest, dt.test$Impressions)
@@ -250,8 +254,8 @@ Compared to multinomial logistic regression, random forest does perform better f
 #Build the model
 if(!file.exists("model_output/impress_boost.rds")){ 
   model3 <- C5.0(mod.formula, data = dt.train, trials = 8)
-  saveRDS(model1, "model_output/impress_boost.rds")
-}else model1 <- readRDS("model_output/impress_boost.rds")
+  saveRDS(model3, "model_output/impress_boost.rds")
+}else model3 <- readRDS("model_output/impress_boost.rds")
 
 #Predict using the model
 dt.test$pred_c50 <- predict(model3, x.test)

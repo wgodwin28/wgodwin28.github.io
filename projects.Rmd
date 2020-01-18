@@ -1,53 +1,40 @@
 ---
-
+author: "Will Godwin"
+output:
+  epuRate::epurate:
+    toc: TRUE
+    number_sections: FALSE
 ---
-
-<link rel="stylesheet" href="styles.css" type="text/css">
 
 ## Political Ad Spending on Google Platforms
 
-\vspace{3em}
-
 [Geographic Distribution Part 1-U.S level](map_ads_us.html)
-
-\vspace{2em}
 
 [Geographic Distribution Part 2-State level](map_ads_state.html)
 
-\vspace{3em}
-
 [Modeling Impressions (Ad views)](impressions_model.html)
-
-\vspace{3em}
 
 [RShiny visualization showing time series of spending](https://wgodwin28.shinyapps.io/shiny_google_political_ads/)
 
-\vspace{3em}
 
 <img src="images/trump.jpg" style="width:30%; border:10px solid; margin-right: 20px" align="left">
 
 
 <img src="images/warren.jpg" style="width:30%; border:10px solid; margin-left: 20px" align="center">
 
-\vspace{3em}
+<br>
 
 $~$
 
 ## United States Wildfires 1992-2015
 
-\vspace{3em}
-
 [Mapping the Most Destructive California Wildfires of 2015](ca_fires_map.html)
-
-\vspace{3em}
 
 [Wildfire Cartograms in U.S.](fires_cartogram.html)
 
-\vspace{3em}
+[Wildfire Time Series Decomposition](fires_time_series.html)
 
-[Wildfire Time Series Decomp](fires_time_series.html)
-
-<img src="images/calif-wildfire.jpg" style="width:80%; border:10px solid; margin-right: 20px" align="center">
+<img src="images/calif-wildfire.jpg" style="width:60%; height:30%; border:10px solid; margin-right: 20px" align="center">
 
 credit: National Geographic
 

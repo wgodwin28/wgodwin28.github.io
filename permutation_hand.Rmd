@@ -1,7 +1,11 @@
 ---
 title: "Homemade Permutation Test"
 author: "Will Godwin"
-output: html_document
+output:
+  epuRate::epurate:
+    toc: TRUE
+    number_sections: FALSE
+    code_folding: "hide"
 ---
 
 ## Intro
