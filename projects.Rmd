@@ -8,14 +8,30 @@ output:
 
 ## Political Ad Spending on Google Platforms
 
-[Geographic Distribution Part 1-U.S level](map_ads_us.html)
 
-[Geographic Distribution Part 2-State level](map_ads_state.html)
+#### [Geographic Distribution Part 1-U.S level](map_ads_us.html)
+<small>Where in the U.S. do most ad dollars go?</small>
 
-[Modeling Impressions (Ad views)](impressions_model.html)
+<div style="margin-bottom:30px;">
+</div>
 
-[RShiny visualization showing time series of spending](https://wgodwin28.shinyapps.io/shiny_google_political_ads/)
+#### [Geographic Distribution Part 2-State level](map_ads_state.html)
+<small>Which congressional districts are the largest recipients of ad spending?</small>
 
+<div style="margin-bottom:30px;">
+</div>
+
+#### [Modeling Impressions](impressions_model.html)
+<small>Which types of ads churn out the largest audience?</small>
+
+<div style="margin-bottom:30px;">
+</div>
+
+#### [Ad Spending Over Time in RShiny](https://wgodwin28.shinyapps.io/shiny_google_political_ads/)
+<small>How is ad spending changing over time? Which superPACs are the most active?</small>
+
+<div style="margin-bottom:30px;">
+</div>
 
 <img src="images/trump.jpg" style="width:30%; border:10px solid; margin-right: 20px" align="left">
 
@@ -28,11 +44,23 @@ $~$
 
 ## United States Wildfires 1992-2015
 
-[Mapping the Most Destructive California Wildfires of 2015](ca_fires_map.html)
+#### [Mapping the Most Destructive California Wildfires of 2015](ca_fires_map.html)
+<small>How many large wildfires do you think were caused lightning?</small>
 
-[Wildfire Cartograms in U.S.](fires_cartogram.html)
+<div style="margin-bottom:30px;">
+</div>
 
-[Wildfire Time Series Decomposition](fires_time_series.html)
+#### [Wildfire Cartograms in U.S.](fires_cartogram.html)
+<small>The U.S. map of wildfire counts since 1992 may surprise you.</small>
+
+<div style="margin-bottom:30px;">
+</div>
+
+#### [Wildfire Time Series Decomposition](fires_time_series.html)
+<small>Have the number of wildfires increased over time?</small>
+
+<div style="margin-bottom:30px;">
+</div>
 
 <img src="images/calif-wildfire.jpg" style="width:60%; height:30%; border:10px solid; margin-right: 20px" align="center">
 
@@ -42,4 +70,5 @@ $~$
 
 ## Miscellaneous
 
-[Homemade Permutation Test on Simulated Cycling Data](permutation_hand.html)
+#### [Permutation Test on Simulated Cycling Data](permutation_hand.html)
+<small>How to conduct permutation test for significance testing purposes.</small>
