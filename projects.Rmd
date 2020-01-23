@@ -6,6 +6,8 @@ output:
     number_sections: FALSE
 ---
 
+<br>
+
 ## Political Ad Spending on Google Platforms
 
 

@@ -6,6 +6,8 @@ output:
     number_sections: FALSE
 ---
 
+<br>
+
 <img src="images/portrait_pic.png" style="width:25%; border:10px solid; margin-right: 20px" align="left">
 
 My name is Will Godwin. Professionally, I'm interested in research within the nexus of climate, health, and agriculture. I enjoy working with data, primarily in R, and am motivated to comprehensively visualize data before modeling and making distributional/statistical assumptions. [Rshiny](https://shiny.rstudio.com/), [ggplot2](https://ggplot2.tidyverse.org/), and [D3.js](https://d3js.org/) make that possible. I currently work as a Data Scientist at University of California San Francisco, managing and analyzing data from randomized-controlled trials investigating methods to reduce childhood mortality. Previously, I studied and worked in Seattle within a data science fellowship through the Institute for Health Metrics and Evaluation (IHME). While there, I graduated with a Masters in Public Health and spent 3 years modeling exposure and health burden due to environmental risk factors for the conspicuous [Global Burden of Disease](https://www.thelancet.com/gbd) study. The work at IHME was fast-paced and afforded me many crash courses in statistics, programming, and time management as we sought to carry out the institute's lofty [vision](http://www.healthdata.org/gbd/about).

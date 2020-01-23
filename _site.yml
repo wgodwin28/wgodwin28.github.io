@@ -5,7 +5,7 @@ navbar:
   left:
     - text: "Data Projects"
       href: projects.html
-    - text: "Papers"
+    - text: "Publications"
       href: papers.html
   right:
     - icon: fa-envelope fa-lg
