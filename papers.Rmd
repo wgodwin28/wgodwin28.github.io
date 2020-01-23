@@ -2,18 +2,24 @@
 author: "Will Godwin"
 output:
   epuRate::epurate:
-    toc: TRUE
+    toc: FALSE
     number_sections: FALSE
     code_folding: "hide"
 ---
+<br>
 
-## University of Washington
+## University of California, San Francisco (2019)
+**Godwin, W.**, …, Oldenburg C.E (2020-in press). Trachoma Prevalence Following Discontinuation of Mass Azithromycin Distribution. Journal of Infectious Disease.
 
-My Masters thesis investigated the interactive effects of air pollution and ambient temperature on mortality in Mexico City using generalized additive models. Full text provided upon request.
+<br>
 
-\vspace{4em}
+## University of Washington (2016-2018)
 
-## Institute for Health Metrics and Evaluation
+My Masters thesis investigated the interactive effects of air pollution and ambient temperature on mortality in Mexico City using generalized additive models. Full text provided [here](https://pdfs.semanticscholar.org/6ed7/ce24142555d65037fd539910344b902a4d30.pdf).
+
+<br>
+
+## Institute for Health Metrics and Evaluation (2015-2018)
 
 The below selected publications represent my contributions to the Global Burden of Disease study over 3 years.
 
@@ -29,9 +35,7 @@ Lim, S. S., …., **Godwin, W. W.**, & GBD 2015 SDG Collaborators (2016). Measur
 
 Wang, H., …, **Godwin, W. W.**, & GBD 2015 Mortality and Causes of Death Collaborators (2016). Global, regional, and national life expectancy, all-cause mortality, and cause-specific mortality for 249 causes of death, 1980–2015: a systematic analysis for the Global Burden of Disease Study 2015.
 
-\vspace{4em}
-
-
+<br>
 
 ## Google scholar
 
