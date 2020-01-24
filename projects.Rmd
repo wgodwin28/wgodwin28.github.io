@@ -12,25 +12,25 @@ output:
 
 
 #### [Geographic Distribution Part 1-U.S level](map_ads_us.html)
-<small>Where in the U.S. do most ad dollars go?</small>
+Where in the U.S. do most ad dollars go?
 
 <div style="margin-bottom:30px;">
 </div>
 
 #### [Geographic Distribution Part 2-State level](map_ads_state.html)
-<small>Which congressional districts are the largest recipients of ad spending?</small>
+Which congressional districts are the largest recipients of ad spending?
 
 <div style="margin-bottom:30px;">
 </div>
 
 #### [Modeling Impressions](impressions_model.html)
-<small>Which types of ads churn out the largest audience?</small>
+Which types of ads churn out the largest audience?
 
 <div style="margin-bottom:30px;">
 </div>
 
 #### [Ad Spending Over Time in RShiny](https://wgodwin28.shinyapps.io/shiny_google_political_ads/)
-<small>How is ad spending changing over time? Which superPACs are the most active?</small>
+How is ad spending changing over time? Which superPACs are the most active?
 
 <div style="margin-bottom:30px;">
 </div>
@@ -47,19 +47,19 @@ $~$
 ## United States Wildfires 1992-2015
 
 #### [Mapping the Most Destructive California Wildfires of 2015](ca_fires_map.html)
-<small>How many large wildfires do you think were caused lightning?</small>
+How many large wildfires do you think were caused lightning?
 
 <div style="margin-bottom:30px;">
 </div>
 
 #### [Wildfire Cartograms in U.S.](fires_cartogram.html)
-<small>The U.S. map of wildfire counts since 1992 may surprise you.</small>
+The U.S. map of wildfire counts since 1992 may surprise you.
 
 <div style="margin-bottom:30px;">
 </div>
 
 #### [Wildfire Time Series Decomposition](fires_time_series.html)
-<small>Have the number of wildfires increased over time?</small>
+Have the number of wildfires increased over time?
 
 <div style="margin-bottom:30px;">
 </div>
@@ -72,5 +72,11 @@ $~$
 
 ## Miscellaneous
 
+#### [Impeachment Effects on Trump Donations](donation_panel.html)
+How have donors responded to the impeachment of the President?
+
+<div style="margin-bottom:30px;">
+</div>
+
 #### [Permutation Test on Simulated Cycling Data](permutation_hand.html)
-<small>How to conduct permutation test for significance testing purposes.</small>
+How to conduct permutation test for significance testing purposes.
