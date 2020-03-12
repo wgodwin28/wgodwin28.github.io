@@ -9,7 +9,7 @@ output:
 ---
 
 ## Intro
-I currently work on a team that frequently relies on permutation tests to test the robustness of the analysis at hand, especially when analyzing data from randomized-controlled trials. The basic idea is to randomly re-allocate the treatment assignment across all observations. This re-allocation is usually repeated 1,000 or 10,000 times to acheive a distribution of the data under the null hypothesis that there is no difference between the groups. They are very flexible to the type of analysis, whether it's logistic, negaitve binomial, poisson, or otherwise. Below, I test out a homemade permuation test on simulated data.
+I currently work on a team that frequently relies on permutation tests to test the robustness of that day's analysis, especially when analyzing data from randomized-controlled trials. The basic idea is to randomly re-allocate the treatment assignment across all observations. This re-allocation is usually repeated 1,000 or 10,000 times to acheive a distribution of the data under the null hypothesis that there is no difference between the groups. They are very flexible to the type of analysis, whether it's logistic, negaitve binomial, poisson, or otherwise. Below, I test out a homemade permuation test on simulated data.
 
 ```{r setup}
 #load ggplot
