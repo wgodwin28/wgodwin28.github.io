@@ -23,19 +23,17 @@ My Masters thesis investigated the interactive effects of air pollution and ambi
 
 ## Institute for Health Metrics and Evaluation (2015-2018)
 
-The below selected publications represent my contributions to the Global Burden of Disease study over 3 years.
+Walker, K., …, **Godwin, W.**, Health Effects Institute & Global Burden of Disease Project Collaboration (2019). State of Global Air 2019-Special Report on Global Exposure to Air Pollution and its Disease Burden.
 
-Walker, K., …, **Godwin, W.**, Health Effects Institute & Global Burden of Disease Project Collaboration (2019). State of Global Air 2019-Special Report on Global Exposure to Air Pollution and its Disease Burden
+Shupler, M., **Godwin, W.**, Frostad, J., Gustafson, P., Arku, R., Brauer, M (2018). Global estimation of exposure to fine particulate matter (PM 2.5) from household air pollution. *Environment International*.
 
-Shupler, M., **Godwin, W.**, Frostad, J., Gustafson, P., Arku, R., Brauer, M (2018). Global estimation of exposure to fine particulate matter (PM 2.5) from household air pollution.
+Gakidou, E., …, **Godwin, W. W.**, & GBD 2016 Risk Factors Collaborators (2017). Global, regional, and national comparative risk assessment of 84 behavioural, environmental and occupational, and metabolic risks or clusters of risks, 1990–2016: a systematic analysis for the Global Burden of Disease Study 2016. *The Lancet*.
 
-Gakidou, E., …, **Godwin, W. W.**, & GBD 2016 Risk Factors Collaborators (2017). Global, regional, and national comparative risk assessment of 84 behavioural, environmental and occupational, and metabolic risks or clusters of risks, 1990–2016: a systematic analysis for the Global Burden of Disease Study 2016.
+Forouzanfar, M. H., …, **Godwin, W. W**., & GBD Collaborators (2016). Global, regional, and national comparative risk assessment of 79 behavioural, environmental and occupational, and metabolic risks or clusters of risks, 1990–2015: a systematic analysis for the Global Burden of Disease Study 2015. *The Lancet*.
 
-Forouzanfar, M. H., …, **Godwin, W. W**., & GBD Collaborators (2016). Global, regional, and national comparative risk assessment of 79 behavioural, environmental and occupational, and metabolic risks or clusters of risks, 1990–2015: a systematic analysis for the Global Burden of Disease Study 2015.
+Lim, S. S., …., **Godwin, W. W.**, & GBD 2015 SDG Collaborators (2016). Measuring the health-related Sustainable Development Goals in 188 countries: a baseline analysis from the Global Burden of Disease Study 2015. *The Lancet*.
 
-Lim, S. S., …., **Godwin, W. W.**, & GBD 2015 SDG Collaborators (2016). Measuring the health-related Sustainable Development Goals in 188 countries: a baseline analysis from the Global Burden of Disease Study 2015.
-
-Wang, H., …, **Godwin, W. W.**, & GBD 2015 Mortality and Causes of Death Collaborators (2016). Global, regional, and national life expectancy, all-cause mortality, and cause-specific mortality for 249 causes of death, 1980–2015: a systematic analysis for the Global Burden of Disease Study 2015.
+Wang, H., …, **Godwin, W. W.**, & GBD 2015 Mortality and Causes of Death Collaborators (2016). Global, regional, and national life expectancy, all-cause mortality, and cause-specific mortality for 249 causes of death, 1980–2015: a systematic analysis for the Global Burden of Disease Study 2015. *The Lancet*.
 
 <br>
 
